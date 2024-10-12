@@ -7,4 +7,5 @@ Frontend notes:
 - Follow the tutorial till the tailwind css setup is complete and you can see the Hello World Text.
 - Then copy paste all the files here into your project.
 - If the  file is not on this page it means it is safe to remove it from the project.
-- Some boilerplate filler text is given for each page to assist navigation
+- Some boilerplate filler text is given for each page to assist navigation.
+- Please delete all the deleteme.html files once you download the repository.
