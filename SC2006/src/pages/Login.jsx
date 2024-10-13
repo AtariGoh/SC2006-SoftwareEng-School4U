@@ -6,14 +6,14 @@ const Login = () => {
         <input
           type="email"
           placeholder="Email"
-          className="w-full p-2 mb-3 border rounded"
+          className="w-full p-2 mb-3 border rounded-2xl bg-[#FAEDCE]"
         />
         <input
           type="password"
           placeholder="Password"
-          className="w-full p-2 mb-4 border rounded"
+          className="w-full p-2 mb-4 border rounded-2xl bg-[#FAEDCE]"
         />
-        <button className="w-full bg-blue-500 text-white py-2 rounded">
+        <button className="w-full bg-[#EF5A6F] text-white py-2 rounded">
           Login
         </button>
       </form>
