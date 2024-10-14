@@ -1,12 +1,15 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import Login from "./Login";
-import Register from "./Register";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const LoginRegister = () => {
-  const navigate = useNavigate(); // For navigation
-  const location = useLocation(); // Get current route
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isLogin, setIsLogin] = useState(location.pathname === "/login");
 
-  const isLogin = location.pathname === "/login"; // Check which route is active
+  useEffect(() => {
+    // Update the isLogin state whenever the route changes
+    setIsLogin(location.pathname === "/loginAndRegister/login");
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen bg-gray-100 mb-24">
@@ -17,7 +20,7 @@ const LoginRegister = () => {
             className={`w-1/2 py-5 text-lg font-bold ${
               isLogin ? "bg-[#FAEDCE] text-black" : "bg-[#EF5A6F] text-white"
             }`}
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/loginAndRegister/login")}
           >
             Login
           </button>
@@ -25,7 +28,7 @@ const LoginRegister = () => {
             className={`w-1/2 py-5 text-lg font-bold ${
               !isLogin ? "bg-[#FAEDCE] text-black" : "bg-[#EF5A6F] text-white"
             }`}
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/loginAndRegister/register")}
           >
             Register
           </button>
@@ -35,11 +38,10 @@ const LoginRegister = () => {
       {/* Form Section */}
       <div className="flex items-center justify-center min-h-[calc(100vh-19rem)] bg-gray-100 pt-44">
         <div
-          className={`w-full ${
-            isLogin ? "max-w-2xl p-12" : "max-w-5xl p-16"
-          } bg-white rounded-lg shadow-lg`}
+          className={`w-full ${isLogin ? "max-w-2xl p-12" : "max-w-5xl p-16"} bg-white rounded-lg shadow-lg`}
         >
-          {isLogin ? <Login /> : <Register />}
+          {/* Outlet renders the nested routes here */}
+          <Outlet />
         </div>
       </div>
     </div>

@@ -1,6 +1,8 @@
 import { Routes, Route, Link } from "react-router-dom";
 import HomePage from "./pages/Homepage";
 import LoginRegister from "./pages/LoginRegister"; // Handles both Login & Register
+import Login from './pages/Login'
+import Register from "./pages/Register";
 import ComparisonDashboard from "./pages/ComparisonDashboard";
 import Chat from "./pages/Chat";
 import SearchSchools from "./pages/SearchSchools";
@@ -44,7 +46,7 @@ const App = () => {
               </Link>
             </li>
             <li className="flex-grow text-center">
-              <Link to="/login" className="hover:underline">
+              <Link to="/loginAndRegister/login" className="hover:underline">
                 Login / Register
               </Link>
             </li>
@@ -56,8 +58,10 @@ const App = () => {
       <div className="pt-20">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginRegister />} />{" "}
-          <Route path="/register" element={<LoginRegister />} />
+          <Route path="/loginAndRegister" element={<LoginRegister />}>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+          </Route>
           {/* Correct Route */}
           <Route path="/dashboard" element={<ComparisonDashboard />} />
           <Route path="/search" element={<SearchSchools />} />
