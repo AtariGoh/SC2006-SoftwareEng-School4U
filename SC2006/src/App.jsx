@@ -2,6 +2,7 @@ import { Routes, Route, Link } from "react-router-dom";
 import HomePage from "./pages/Homepage";
 import LoginRegister from "./pages/LoginRegister"; // Handles both Login & Register
 import ComparisonDashboard from "./pages/ComparisonDashboard";
+import Chat from "./pages/Chat";
 import SearchSchools from "./pages/SearchSchools";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
@@ -38,7 +39,9 @@ const App = () => {
               </Link>
             </li>
             <li className="flex-grow text-center">
-              <span className="opacity-50 cursor-not-allowed">Chat Forum</span>
+            <Link to="/chat" className="hover:underline">
+                Chat Forum
+              </Link>
             </li>
             <li className="flex-grow text-center">
               <Link to="/login" className="hover:underline">
@@ -58,6 +61,7 @@ const App = () => {
           {/* Correct Route */}
           <Route path="/dashboard" element={<ComparisonDashboard />} />
           <Route path="/search" element={<SearchSchools />} />
+          <Route path = "/chat" element={<Chat />} />
           <Route path="/review" element={<Review />} />
         </Routes>
       </div>
