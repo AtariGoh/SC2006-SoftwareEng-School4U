@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import SchoolCard from "../components/SchoolCard"; // Import SchoolCard component
 
@@ -7,10 +7,14 @@ const SearchSchools = () => {
 
   // State management
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]);
-  const [allSchools, setAllSchools] = useState([]);
+  const [results, setResults] = useState([]); // Schools shown on the page
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Pagination and infinite scroll state
+  const [page, setPage] = useState(1); // Current page
+  const [hasMore, setHasMore] = useState(true); // Whether more data exists
+  const observer = useRef(); // Observer reference
 
   // Filter-related state
   const [filtersVisible, setFiltersVisible] = useState(false); // Toggle filters section
@@ -19,79 +23,84 @@ const SearchSchools = () => {
   const [location, setLocation] = useState("");
   const [sortBy, setSortBy] = useState("name-asc");
 
-  // Fetch data from backend on mount
-  useEffect(() => {
-    const fetchSchools = async () => {
-      try {
-        setLoading(true);
+  const SCHOOLS_PER_PAGE = 10; // Number of schools per page
 
-        // Replace this with your API endpoint
-        const response = await fetch("https://your-api.com/schools");
-        if (!response.ok) throw new Error("Failed to fetch schools.");
+  // Fetch schools with pagination from backend
+  const fetchSchools = async (reset = false) => {
+    try {
+      setLoading(true);
 
-        const data = await response.json();
-        setAllSchools(data);
-        setResults(data);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        setError("Failed to fetch schools.");
-        setLoading(false);
-      }
-    };
+      const queryParams = new URLSearchParams({
+        query,
+        level,
+        programme,
+        location,
+        sortBy,
+        page,
+        limit: SCHOOLS_PER_PAGE,
+      });
 
-    fetchSchools();
-  }, []);
-
-  // Handle search logic with filters
-  const handleSearch = () => {
-    let filteredResults = allSchools;
-
-    if (query) {
-      filteredResults = filteredResults.filter((school) =>
-        school.name.toLowerCase().includes(query.toLowerCase())
+      const response = await fetch(
+        `https://your-api.com/schools?${queryParams.toString()}`
       );
-    }
 
-    if (level) {
-      filteredResults = filteredResults.filter(
-        (school) => school.level === level
+      if (!response.ok) throw new Error("Failed to fetch schools.");
+
+      const data = await response.json();
+
+      setResults((prevResults) =>
+        reset ? data.schools || [] : [...prevResults, ...(data.schools || [])]
       );
+      setHasMore((data.schools || []).length === SCHOOLS_PER_PAGE);
+    } catch (error) {
+      console.error(error);
+      setError("Failed to fetch schools.");
+    } finally {
+      setLoading(false);
     }
-
-    if (programme) {
-      filteredResults = filteredResults.filter((school) =>
-        school.programme.toLowerCase().includes(programme.toLowerCase())
-      );
-    }
-
-    if (location) {
-      filteredResults = filteredResults.filter((school) =>
-        school.location.toLowerCase().includes(location.toLowerCase())
-      );
-    }
-
-    // Sort results based on user selection
-    if (sortBy === "name-asc") {
-      filteredResults.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === "name-desc") {
-      filteredResults.sort((a, b) => b.name.localeCompare(a.name));
-    } else if (sortBy === "ratings") {
-      filteredResults.sort((a, b) => (b.rating || 0) - (a.rating || 0)); // Descending order
-    }
-
-    setResults(filteredResults);
   };
+
+  // Load schools on initial mount and whenever filters or query change
   useEffect(() => {
-    handleSearch(); // Trigger search whenever a filter or sorting changes
+    setPage(1); // Reset to first page
+
+    // Trigger a fetch only after resetting the page to 1
+    const timeoutId = setTimeout(() => fetchSchools(true), 0);
+
+    return () => clearTimeout(timeoutId); // Cleanup on unmount
   }, [query, level, programme, location, sortBy]);
+
+  // Fetch more schools when the page number changes
+  useEffect(() => {
+    if (page > 1) fetchSchools();
+  }, [page]);
+
+  // IntersectionObserver to detect when the bottom is reached
+  const lastSchoolRef = useCallback(
+    (node) => {
+      if (loading) return; // Avoid attaching observer while loading
+
+      if (observer.current) observer.current.disconnect(); // Cleanup previous observer
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setPage((prevPage) => prevPage + 1); // Increment page number
+        }
+      });
+
+      if (node) observer.current.observe(node); // Attach observer to new node
+    },
+    [loading, hasMore] // Dependencies to recreate the observer
+  );
 
   const handleClear = () => {
     setQuery("");
     setLevel("");
     setProgramme("");
     setLocation("");
-    setResults(allSchools); // Reset to all schools
+    setSortBy("name-asc"); // Reset to default sort
+
+    // Optionally, trigger a fetch manually after resetting filters if needed
   };
 
   return (
@@ -114,10 +123,13 @@ const SearchSchools = () => {
             {filtersVisible ? "Hide Filters" : "Show Filters"}
           </button>
           <button
-            onClick={handleSearch}
-            className="bg-green-500 text-white px-4 py-2 rounded-md shadow-md"
+            onClick={() => fetchSchools(true)}
+            disabled={loading}
+            className={`bg-green-500 text-white px-4 py-2 rounded-md shadow-md ${
+              loading ? "opacity-50" : ""
+            }`}
           >
-            Search
+            {loading ? "Searching..." : "Search"}
           </button>
           <button
             onClick={handleClear}
@@ -150,7 +162,7 @@ const SearchSchools = () => {
                 placeholder="Level (e.g., Primary, Secondary)"
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
-                className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE] "
+                className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
               />
               <input
                 type="text"
@@ -176,16 +188,20 @@ const SearchSchools = () => {
 
         {/* Display Search Results */}
         <div className="grid gap-4">
-          {results.map((school) => (
-            <SchoolCard
+          {results.map((school, index) => (
+            <div
+              ref={index === results.length - 1 ? lastSchoolRef : null}
               key={school.id}
-              name={school.name}
-              programme={school.programme}
-              location={school.location}
-              onClick={() => navigate(`/school/${school.id}`)}
-              onCompare={() => console.log(`Added ${school.name} to compare`)}
-              onReview={() => console.log(`Reviewing ${school.name}`)}
-            />
+            >
+              <SchoolCard
+                name={school.name}
+                programme={school.programme}
+                location={school.location}
+                onClick={() => !loading && navigate(`/school/${school.id}`)}
+                onCompare={() => console.log(`Added ${school.name} to compare`)}
+                onReview={() => console.log(`Reviewing ${school.name}`)}
+              />
+            </div>
           ))}
         </div>
 
