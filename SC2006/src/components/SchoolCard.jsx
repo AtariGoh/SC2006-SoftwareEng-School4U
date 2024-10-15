@@ -1,14 +1,15 @@
-const SchoolCard = ({
-  name,
-  programme,
-  location,
-  onClick,
-  onCompare,
-  onReview,
-}) => {
+import { useNavigate } from "react-router-dom";
+
+const SchoolCard = ({ name, programme, location, onCompare }) => {
+  const navigate = useNavigate();
+
   return (
     <div
-      onClick={onClick}
+      onClick={() =>
+        navigate("/school-review", {
+          state: { name, programme, location },
+        })
+      }
       className="p-4 bg-[#FAEDCE] border border-black shadow-md rounded-md flex justify-between items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
     >
       <div>
@@ -29,7 +30,9 @@ const SchoolCard = ({
         <button
           onClick={(e) => {
             e.stopPropagation(); // Prevent card click from triggering
-            onReview();
+            navigate("/school-review", {
+              state: { name, programme, location },
+            });
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded-md"
         >
