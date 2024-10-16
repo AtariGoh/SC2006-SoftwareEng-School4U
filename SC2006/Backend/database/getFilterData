@@ -1,0 +1,82 @@
+// Dataset IDs (for different datasets available in the Data.gov.sg API)
+const datasetId = {
+    "CCA": "d_9aba12b5527843afb0b2e8e4ed6ac6bd",  // Co-curricular activities
+    "genInfo": "d_688b934f82c1059ed0a6993d2a829089",  // General Information of Schools
+    "MOE": "d_b0697d22a7837a4eddf72efb66a36fc2",  // MOE programmes
+    "distProg": "d_db1faeea02c646fa3abccfa5aba99214",  // Distinctive Programmes
+    "Subjects": "d_f1d144e423570c9d84dbc5102c2e664d"  // Subjects Offered
+  };
+  
+  // Base URL for API (using "General Information" dataset)
+  const baseUrl = `https://data.gov.sg/api/action/datastore_search?resource_id=${datasetId["genInfo"]}`;
+  
+  // Function to build query parameters dynamically based on user input
+  function buildQueryParams(filters) {
+    const queries = new URLSearchParams({
+      limit: 9999,  // Fetch as many records as possible
+      fields: 'school_name,programme_type,email_address',  // Select specific fields
+    });
+  
+    // Add dynamic filters (if any) provided by user
+    for (const [key, value] of Object.entries(filters)) {
+      if (value) {
+        queries.append(`filters[${key}]`, value);
+      }
+    }
+  
+    return queries;
+  }
+  
+  // Function to fetch data from the API with the built query
+  function fetchFilteredData(filters) {
+    const queries = buildQueryParams(filters);
+    const urlWithQueries = `${baseUrl}&${queries.toString()}`;
+  
+    fetch(urlWithQueries)
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to fetch data');
+        return response.json();
+      })
+      .then(data => {
+        console.log('Fetched Records:', data.result.records);
+        displayResults(data.result.records);  // Display results on the page
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  }
+  
+  // Function to display fetched records on the page
+  function displayResults(records) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = '';  // Clear previous results
+  
+    if (records.length === 0) {
+      resultsContainer.innerHTML = '<p>No records found.</p>';
+      return;
+    }
+  
+    // Display each record as a separate div
+    records.forEach(record => {
+      const recordElement = document.createElement('div');
+      recordElement.textContent = `School: ${record.school_name}, Programme: ${record.programme_type}, Email: ${record.email_address}`;
+      resultsContainer.appendChild(recordElement);
+    });
+  }
+  
+  // Event listener for button click
+  document.getElementById('searchButton').addEventListener('click', () => {
+    // Collect user inputs from the input fields
+    const schoolName = document.getElementById('schoolNameInput').value;
+    const programmeType = document.getElementById('programmeTypeInput').value;
+    const hasMOEProgramme = document.getElementById('hasMOEProgramme').checked ? "Yes" : "";
+  
+    // Build filters object with user inputs
+    const filters = {
+      school_name: schoolName,
+      programme_type: programmeType,
+      MOE_programme: hasMOEProgramme,
+    };
+  
+    // Fetch data with the provided filters
+    fetchFilteredData(filters);
+  });
+  
