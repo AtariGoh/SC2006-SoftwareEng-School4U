@@ -40,7 +40,7 @@ const InfoCard = ({schoolData}) => {
         
       </div>
       <div className="flex flex-col items-center">
-                  <button className={`${linkButton} bg-rose-500 w-60`} onClick={()=> navigate('/Register')}>Chat with the community</button>
+                  <button className={`${linkButton} bg-rose-500 w-60`} onClick={()=> navigate('/chat')}>Chat with the community</button>
                   <button className={`${linkButton} bg-yellow-800 bg-opacity-40 w-60`}>View Reviews</button>
       </div>
     </div>
