@@ -1,7 +1,9 @@
 import { useState } from 'react'; 
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Login = () => {
-  const [loginData, setLoginData] = useState({ user: '', password: '' });
+  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const { loggedIn, setLoggedIn } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,8 +16,8 @@ const Login = () => {
   const handleSubmit = async(e) => {
     e.preventDefault();
 
-    {/*try {
-      const response = await fetch('/api/login', {
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,7 +31,6 @@ const Login = () => {
       if (response.ok) {
         const result = await response.json();
         setLoggedIn(true); // Assume user is logged in if the login request succeeds
-        handleClose();
       }
        else {
         const error = await response.json();
@@ -37,7 +38,7 @@ const Login = () => {
       }
     } catch (err) {
       console.error('Error:', err); 
-    }*/}
+    }
     
     console.log(loginData);  // This will now log the user and password correctly
   };
@@ -48,10 +49,10 @@ const Login = () => {
       <form onSubmit={handleSubmit}> {/* Attach the onSubmit handler here */}
         <input
           type="text"
-          name="user" 
+          name="username" 
           placeholder="Username"
           className="w-full p-2 mb-3 border rounded-2xl bg-[#FAEDCE]"
-          value={loginData.user}
+          value={loginData.username}
           onChange={handleChange}
         />
         <input
