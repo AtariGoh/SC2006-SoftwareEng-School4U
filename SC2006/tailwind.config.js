@@ -14,6 +14,10 @@ export default {
         neutral: "#757185",
         background: "#FFFFFF",
         dark: "#15131D",
+        red: "#EF5A6F",
+        yellow: "#FFF1DB",
+        brown: "#D4BDAC",
+        blue: "#536493",
       },
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],
