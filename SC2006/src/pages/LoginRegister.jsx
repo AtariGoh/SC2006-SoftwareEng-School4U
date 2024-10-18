@@ -1,10 +1,12 @@
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from '../context/AuthContext.jsx';
 
 const LoginRegister = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(location.pathname === "/login");
+  const { loggedIn, setLoggedIn } = useAuth();
 
   useEffect(() => {
     // Update the isLogin state whenever the route changes
@@ -12,6 +14,7 @@ const LoginRegister = () => {
   }, [location.pathname]);
 
   return (
+    loggedIn ? (<div>You are already Logged in</div>) :
     <div className="min-h-screen bg-gray-100 mb-24">
       {/* Secondary Navbar positioned lower under primary navbar */}
       <div className="fixed top-32 left-0 w-full bg-[#EF5A6F] shadow-md z-40">

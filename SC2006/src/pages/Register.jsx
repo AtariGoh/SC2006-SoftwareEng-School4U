@@ -37,8 +37,8 @@ const Register = () => {
       return;
     }
 
-    {/*try {
-      const response = await fetch('/api/signup', {
+    try {
+      const response = await fetch('http://localhost:5000/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,13 +47,15 @@ const Register = () => {
           username: signUpData.username,
           email: signUpData.email,
           password: signUpData.password,
+          name: signUpData.name,
+          mobile: signUpData.mobile,
+          residence: signUpData.residence,
         }),
       });
 
       if (response.ok) {
         const result = await response.json();
         alert(result.message);
-        handleClose(); 
       } else {
         const error = await response.json();
         alert(error.error);
@@ -61,7 +63,6 @@ const Register = () => {
     } catch (err) {
       console.error('Error:', err);
     }
-    */}
     console.log(signUpData);
   };
 
