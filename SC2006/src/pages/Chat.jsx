@@ -1,41 +1,76 @@
 import React from "react";
 import ButtonCardForChat from "../components/ButtonCardForChat"; // Reusable card component
+import { useState, useEffect } from "react";
+import psgImage from "../assets/psg-image.png";
+import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
+import aftsec from "../assets/after-secondary.png"
 
 const Chat = () => {
+
+  const [isVerified, setIsVerified] = useState(false); // New state for authentication
+  const[allChats, setAllChats]=useState([]);
+  
+  useEffect(() => {
+
+    /*
+    const fetchChats = async () => {
+      try {
+        const response = await fetch('/api/chat');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAllChats(data);
+      } catch (error) {
+        console.error('Error fetching chat rooms:', error);
+      }
+    };
+  
+    
+    const checkAuthStatus = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        const response = await fetch('/api/chat/verify-access', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`, // Send token with the request
+          },
+        });
+        const data = await response.json();
+        if (data.verified) {
+          setIsVerified(true); // User is verified as a parent
+        }
+      }
+    };
+    */
+    
+    //fetchChats();
+    // checkAuthStatus(); // Check the token when the page loads
+  }, []);
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold mb-4">Parents Chat Forum</h2>
       <p className="text-lg mb-6">
         Join channel to understand the school life of your children.
       </p>
+      <ul>
+        {allChats.map((chat)=>(
+          <li key={chat.id}>{chat.name}</li>
+        ))}
+      </ul>
       
       {/* Flexbox container for horizontal alignment */}
       <div className="flex space-x-6">
         {/* Card 1 */}
         <ButtonCardForChat
           title="Parents Support Group"
-          imageUrl="https://www.helpmychildlearn.org/wp-content/uploads/2019/12/support-group-image.png"
+          imageUrl={psgImage}
           description="Ask any questions or share advice about your child's school experience."
-          linkText="Join chat"
-          linkHref="#join"
-        />
-
-        {/* Card 2: School Events */}
-        <ButtonCardForChat
-          title="School Events"
-          imageUrl="school-events.jpg"
-          description="Ask any questions or share advice about school events."
-          linkText="Join chat"
-          linkHref="#join"
-        />
-
-        {/* Card 3: School Matters */}
-        <ButtonCardForChat
-          title="School Matters"
-          imageUrl="school-matters.jpg"
-          description="Discuss school-related topics and concerns."
-          linkText="Join chat"
-          linkHref="#join"
+          linkText={isVerified ? "Join chat" : "Authenticate to access"}
+          linkHref={isVerified ? "/join" : "/psgchat"} // Enable the link only if authenticated
+          onClick={isVerified } // Handle verification if not authenticated
+          //blurred={!isVerified} // Blur if not verified
         />
       </div>
 
@@ -50,19 +85,19 @@ const Chat = () => {
           {/* Card 4 */}
           <ButtonCardForChat
             title="After primary school"
-            imageUrl="https://www.helpmychildlearn.org/wp-content/uploads/2019/12/support-group-image.png"
+            imageUrl={afterpri}
             description="Discuss with parents how to choose a secondary school after PSLE."
             linkText="Join chat"
-            linkHref="#join"
+            linkHref="/aftprichat"
           />
 
           {/* Card 5 */}
           <ButtonCardForChat
             title="After secondary school"
-            imageUrl="post-sec-school.jpg"
+            imageUrl={aftsec}
             description="Discuss with parents where to go after secondary schools."
             linkText="Join chat"
-            linkHref="#join"
+            linkHref="/aftsecchat"
           />
         </div>
       </div>

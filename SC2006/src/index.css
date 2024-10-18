@@ -22,3 +22,8 @@
     @apply font-sans bg-gray-100 text-gray-900; /* Adjust colors as needed */
   }
 }
+
+.blurred{
+  filter:blur(5px);
+  pointer-events: none; /*disable clicks*/
+}

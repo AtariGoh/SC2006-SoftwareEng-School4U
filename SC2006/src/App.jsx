@@ -5,6 +5,10 @@ import Login from './pages/Login'
 import Register from "./pages/Register";
 import ComparisonDashboard from "./pages/ComparisonDashboard";
 import Chat from "./pages/Chat";
+import PSGChat from "./pages/PSGChat";
+import AftPriChat from "./pages/AftPriChat";
+import AftSecChat from "./pages/AftSecChat";
+import AuthForChat from "./pages/AuthForChat";
 import SearchSchools from "./pages/SearchSchools";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
@@ -66,6 +70,10 @@ const App = () => {
           <Route path="/dashboard" element={<ComparisonDashboard />} />
           <Route path="/search" element={<SearchSchools />} />
           <Route path = "/chat" element={<Chat />} />
+          <Route path = "/psgchat" element ={<PSGChat/>}/>
+          <Route path = "/aftprichat" element ={<AftPriChat/>}/>
+          <Route path = "/aftsecchat" element ={<AftSecChat/>}/>
+
           <Route path="/review" element={<Review />} />
         </Routes>
       </div>
