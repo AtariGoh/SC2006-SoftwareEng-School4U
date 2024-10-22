@@ -9,7 +9,6 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 // Signup Route
 router.post('/signup', async (req, res) => {
     const { username, email, password, name, mobile, residence } = req.body;
-
     if (!username || !email || !password) {
         return res.status(400).json({ error: "All fields are required" });
     }
