@@ -6,22 +6,22 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+//Middleware
 app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
 
 // Import routes
 const authRoutes = require('./routes/userLoginSignUp');
-const chatRoutes = require('./routes/chatRoutes');
 const PSGChatRoutes = require('./routes/PSGChatRoute');
-const reviewRoutes = require('./routes/reviewRoutes');
+const aftPriChatRoutes = require('./routes/aftPriChatRoutes');
+const aftSecChatRoutes = require('./routes/aftSecChatRoute');
 
 // Use routes
 app.use('/api', authRoutes);
-app.use('/api/chat', chatRoutes);
-app.use('/api/psgchat', PSGChatRoutes);
-app.use('/reviews', reviewRoutes);
+app.use('/api', PSGChatRoutes);
+app.use('/api', aftPriChatRoutes);
+app.use('/api', aftSecChatRoutes);
 
 // Start the server
 app.listen(PORT, () => {

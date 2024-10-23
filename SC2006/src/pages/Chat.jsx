@@ -67,9 +67,9 @@ const Chat = () => {
           title="Parents Support Group"
           imageUrl={psgImage}
           description="Ask any questions or share advice about your child's school experience."
-          linkText={isVerified ? "Join chat" : "Authenticate to access"}
-          linkHref={isVerified ? "/join" : "/psgchat"} // Enable the link only if authenticated
-          onClick={isVerified } // Handle verification if not authenticated
+          linkText={"Join chat"}
+          linkHref={"/psgchat"} // Enable the link only if authenticated
+          //onClick={isVerified } // Handle verification if not authenticated
           //blurred={!isVerified} // Blur if not verified
         />
       </div>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {FaHeart, FaLink} from "react-icons/fa";
+import { FaHeart, FaLink } from "react-icons/fa";
 import psgImage from "../assets/psg-image.png";
 import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
 
 const PSGChat = () => {
-  /*
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -13,9 +12,19 @@ const PSGChat = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch("/api/chat/psgchat/messages");
+        const response = await fetch("http://localhost:5000/api/psgchat");
+        const contentType = response.headers.get("content-type");
         const data = await response.json();
-        setMessages(data);
+        
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          setMessages(data);
+        } else {
+          console.error("Expected JSON but got", contentType);
+          const text = await response.text();
+          console.error("Response text:", text);
+        }
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -28,14 +37,14 @@ const PSGChat = () => {
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
       try {
-        const response = await fetch("/api/chat/psgchat/messages", {
+        const response = await fetch("http://localhost:5000/api/psgchat/messages", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ sender: "You", message: newMessage }),
+          body: JSON.stringify({ message: newMessage }), // Send only the message for now
         });
-        
+
         if (response.ok) {
           const result = await response.json();
           setMessages([...messages, ...result.data]); // Append new message to chat
@@ -50,7 +59,6 @@ const PSGChat = () => {
   if (loading) {
     return <div>Loading chat messages...</div>;
   }
-    */
 
   return (
     <div className="flex h-screen">
@@ -104,23 +112,30 @@ const PSGChat = () => {
         </div>
 
         {/* Chat messages */}
-        <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center"> </div>
-        
+        <div className="p-6 flex-grow overflow-auto">
+          {messages.map((msg, index) => (
+            <div key={index} className="mb-4">
+              <div className="bg-gray-200 p-2 rounded-lg">
+                {msg.message}
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Chat input */}
-        <div className="justify-bottom bg-yellow  border-t border-gray-300  rounded-full flex items-center space-x-4">
+        <div className="justify-bottom bg-yellow border-t border-gray-300 rounded-full flex items-center space-x-4 p-4">
           <FaLink className="text-dark" />
           <input
             type="text"
             placeholder="Type Your Message..."
             className="flex-grow px-4 py-2 border border-yellow bg-yellow rounded focus:outline-none"
-            //value={newMessage}
-            //onChange={(e) => setNewMessage(e.target.value)}
-            //onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
           />
           <button
             className="px-6 py-2 bg-blue text-white rounded-full hover:shadow-lg transition-shadow duration-300"
-            //onClick={handleSendMessage}
+            onClick={handleSendMessage}
           >
             Send
           </button>
