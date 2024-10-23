@@ -1,18 +1,21 @@
 
 const express = require('express');
 const router = express.Router();
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
 
 // Route to fetch all chat messages
-router.get('/aftprichat', async (req, res) => {
+router.get('/apchat', async (req, res) => {
   try {
     // Fetching all messages from the 'PsgChat' table
     const { data: messages, error } = await supabase
       .from('ApChat')
       .select('*')
-      .order('timestamp', { ascending: true }); // Order by timestamp ascending
+      .order('created_at', { ascending: true }); // Order by timestamp ascending
 
     if (error) {
-      throw new Error('Error fetching messages');
+      throw new Error('Error fetching messages at apchat');
     }
 
     res.status(200).json(messages);
@@ -22,19 +25,23 @@ router.get('/aftprichat', async (req, res) => {
 });
 
 // Route to post a new message
-router.post('/psg/messages', async (req, res) => {
+router.post('/apchat/messages', async (req, res) => {
   const { message } = req.body;  // Destructure sender and message from the request body
 
   try {
     const { data, error } = await supabase
       .from('ApChat')
-      .insert([{message }]);   //add user 
+      .insert([{message }])   //add user 
+      .select("*");
 
     if (error) {
       throw new Error('Error posting message');
     }
 
-    res.status(201).json(data);
+    //create message object
+    const result = data[0].message;
+    res.status(201).json(result);
+
   } catch (error) {
     console.log("error in apchat", error);
     res.status(500).json({ message: error.message });
