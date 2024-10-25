@@ -1,6 +1,9 @@
 // routes/PSGChatRoutes.js
 const express = require('express');
 const router = express.Router();
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
 
 // Route to fetch all chat messages
 router.get('/psgchat', async (req, res) => {
@@ -9,7 +12,7 @@ router.get('/psgchat', async (req, res) => {
     const { data: messages, error } = await supabase
       .from('PsgChat')
       .select('*')
-      .order('timestamp', { ascending: true }); // Order by timestamp ascending
+      .order('created_at', { ascending: true }); // Order by timestamp ascending
 
     if (error) {
       throw new Error('Error fetching messages');
@@ -28,13 +31,17 @@ router.post('/psgchat/messages', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('PsgChat')
-      .insert([{message }]);   //add user 
+      .insert([{message }])   //add user 
+      .select("*");
 
     if (error) {
       throw new Error('Error posting message');
     }
 
-    res.status(201).json(data);
+    //create message object
+    const result = data[0].message;
+    res.status(201).json(result);
+
   } catch (error) {
     console.log("error in psgchat", error);
     res.status(500).json({ message: error.message });
