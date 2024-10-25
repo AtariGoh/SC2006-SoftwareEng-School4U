@@ -1,8 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const net = require('net');  // 用于检查端口是否被占用
 const cors = require('cors');  // 新增CORS库
+/*
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = process.env.SUPABASE_URL1;
@@ -15,17 +17,30 @@ console.log('Supabase Key:', supabaseKey);
 
 // 导出 Supabase 客户端实例
 module.exports = supabase;
+*/
 
 // 导入路由
-app.use(cors());  // 启用CORS
+app.use(cookieParser());
+app.use(cors());
+app.use(express.json());
+
+// Import routes
+const authRoutes = require('./routes/userLoginSignUp');
+const PSGChatRoutes = require('./routes/PSGChatRoute');
+const aftPriChatRoutes = require('./routes/aftPriChatRoutes');
+const aftSecChatRoutes = require('./routes/aftSecChatRoute');
 const reviewRoutes = require('./routes/reviewRoutes');
 
-app.use(express.json());
+// Use routes
+app.use('/api', authRoutes);
+app.use('/api', PSGChatRoutes);
+app.use('/api', aftPriChatRoutes);
+app.use('/api', aftSecChatRoutes);
 app.use('/reviews', reviewRoutes);
 
 // 默认端口
 const defaultPort = process.env.PORT || 5000;
-let port = defaultPort;
+const PORT = defaultPort;
 
 // 检测端口是否被占用
 function checkPort(port) {
@@ -59,14 +74,8 @@ async function findAvailablePort(startPort) {
   return currentPort;
 }
 
-// 启动服务器函数
-async function startServer() {
-  port = await findAvailablePort(port);
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
-}
-
-// 启动服务器
-startServer();

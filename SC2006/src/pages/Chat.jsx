@@ -1,52 +1,16 @@
 import React from "react";
 import ButtonCardForChat from "../components/ButtonCardForChat"; // Reusable card component
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import psgImage from "../assets/psg-image.png";
 import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
 import aftsec from "../assets/after-secondary.png"
 
+
 const Chat = () => {
 
-  const [isVerified, setIsVerified] = useState(false); // New state for authentication
-  const[allChats, setAllChats]=useState([]);
-  
-  useEffect(() => {
 
-    /*
-    const fetchChats = async () => {
-      try {
-        const response = await fetch('/api/chat');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        setAllChats(data);
-      } catch (error) {
-        console.error('Error fetching chat rooms:', error);
-      }
-    };
-  
-    
-    const checkAuthStatus = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        const response = await fetch('/api/chat/verify-access', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`, // Send token with the request
-          },
-        });
-        const data = await response.json();
-        if (data.verified) {
-          setIsVerified(true); // User is verified as a parent
-        }
-      }
-    };
-    */
-    
-    //fetchChats();
-    // checkAuthStatus(); // Check the token when the page loads
-  }, []);
+  const[allChats]=useState([]);
+
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -59,7 +23,7 @@ const Chat = () => {
           <li key={chat.id}>{chat.name}</li>
         ))}
       </ul>
-      
+     
       {/* Flexbox container for horizontal alignment */}
       <div className="flex space-x-6">
         {/* Card 1 */}
@@ -74,12 +38,13 @@ const Chat = () => {
         />
       </div>
 
+
       <div className="mt-12">
         <h2 className="text-3xl font-bold mb-4">Your children's roadmap</h2>
         <p className="text-lg mb-6">
           Join channel to understand what to expect in the transition to their next phase of journey.
         </p>
-        
+       
         {/* Flexbox container for horizontal alignment */}
         <div className="flex space-x-6">
           {/* Card 4 */}
@@ -90,6 +55,7 @@ const Chat = () => {
             linkText="Join chat"
             linkHref="/aftprichat"
           />
+
 
           {/* Card 5 */}
           <ButtonCardForChat
@@ -105,4 +71,8 @@ const Chat = () => {
   );
 };
 
+
 export default Chat;
+
+
+

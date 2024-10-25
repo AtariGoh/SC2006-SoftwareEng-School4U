@@ -2,11 +2,14 @@ import React, { useState, useEffect } from "react";
 import { FaHeart, FaLink } from "react-icons/fa";
 import psgImage from "../assets/psg-image.png";
 import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
+import aftsec from "../assets/after-secondary.png"
+
 
 const PSGChat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+
 
   // Fetch messages when component loads
   useEffect(() => {
@@ -14,8 +17,7 @@ const PSGChat = () => {
       try {
         const response = await fetch("http://localhost:5000/api/psgchat");
         const contentType = response.headers.get("content-type");
-        const data = await response.json();
-        
+       
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
           setMessages(data);
@@ -25,6 +27,7 @@ const PSGChat = () => {
           console.error("Response text:", text);
         }
 
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -32,7 +35,18 @@ const PSGChat = () => {
       }
     };
     fetchMessages();
+
+
+    // Fetch messages every 2 seconds (000 ms)
+    const intervalId = setInterval(() => {
+      fetchMessages();
+    }, 2000);
+
+
+    // Cleanup function to clear the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
+
 
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
@@ -45,9 +59,10 @@ const PSGChat = () => {
           body: JSON.stringify({ message: newMessage }), // Send only the message for now
         });
 
+
         if (response.ok) {
           const result = await response.json();
-          setMessages([...messages, ...result.data]); // Append new message to chat
+          setMessages([...messages, ...result]); // Append new message to chat
           setNewMessage(""); // Clear input field
         }
       } catch (error) {
@@ -56,9 +71,11 @@ const PSGChat = () => {
     }
   };
 
+
   if (loading) {
     return <div>Loading chat messages...</div>;
   }
+
 
   return (
     <div className="flex h-screen">
@@ -94,7 +111,21 @@ const PSGChat = () => {
                 className="w-10 h-10 rounded-full mr-3"
               />
               <div>
-                <div className="font-semibold">After primary school</div>
+                <div className="font-semibold">Journey After Primary School</div>
+                <div className="text-sm text-gray-500">Welcome to the...?</div>
+              </div>
+            </div>
+            <FaHeart className="text-yellow-500" />
+          </div>
+          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
+            <div className="flex items-center">
+              <img
+                src={aftsec}
+                alt="Group"
+                className="w-10 h-10 rounded-full mr-3"
+              />
+              <div>
+                <div className="font-semibold">Journey After Secondary School</div>
                 <div className="text-sm text-gray-500">Welcome to the...?</div>
               </div>
             </div>
@@ -103,6 +134,7 @@ const PSGChat = () => {
         </div>
       </div>
 
+
       {/* Main chat area */}
       <div className="w-3/4 bg-FFF1DB flex flex-col">
         {/* Chat header */}
@@ -110,6 +142,7 @@ const PSGChat = () => {
           <h2 className="text-2xl font-bold text-536493">Parents Support Group</h2>
           <p className="text-500">389 members, 180 online</p>
         </div>
+
 
         {/* Chat messages */}
         <div className="p-6 flex-grow overflow-auto">
@@ -122,8 +155,9 @@ const PSGChat = () => {
           ))}
         </div>
 
+
         {/* Chat input */}
-        <div className="justify-bottom bg-yellow border-t border-gray-300 rounded-full flex items-center space-x-4 p-4">
+        <div className="justify-bottom bg-yellow  border-t border-gray-300  rounded-full flex items-center space-x-4">
           <FaLink className="text-dark" />
           <input
             type="text"
@@ -144,5 +178,6 @@ const PSGChat = () => {
     </div>
   );
 };
+
 
 export default PSGChat;

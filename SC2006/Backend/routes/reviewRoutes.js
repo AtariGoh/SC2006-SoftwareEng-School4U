@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const supabase = require('../server'); // 引入 supabase 客户端实例
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL1, process.env.SUPABASE_KEY1);
 console.log(supabase);
 
 

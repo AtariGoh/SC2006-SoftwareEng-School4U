@@ -5,19 +5,31 @@ import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.
 import aftsec from "../assets/after-secondary.png"
 
 
+
+
 const AftSecChat = () => {
-  /*
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+
 
   // Fetch messages when component loads
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch("/api/chat/psgchat/messages");
-        const data = await response.json();
-        setMessages(data);
+        const response = await fetch("http://localhost:5000/api/aschat");
+        const contentType = response.headers.get("content-type");
+       
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
+          setMessages(data);
+        } else {
+          console.error("Expected JSON but got", contentType);
+          const text = await response.text();
+          console.error("Response text:", text);
+        }
+
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching messages:", error);
@@ -25,22 +37,34 @@ const AftSecChat = () => {
       }
     };
     fetchMessages();
+
+
+    // Fetch messages every 2 seconds (2000 ms)
+    const intervalId = setInterval(() => {
+      fetchMessages();
+    }, 2000);
+
+
+    // Cleanup function to clear the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
+
 
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
       try {
-        const response = await fetch("/api/chat/psgchat/messages", {
+        const response = await fetch("http://localhost:5000/api/aschat/messages", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ sender: "You", message: newMessage }),
+          body: JSON.stringify({ message: newMessage }), // Send only the message for now
         });
-        
+
+
         if (response.ok) {
           const result = await response.json();
-          setMessages([...messages, ...result.data]); // Append new message to chat
+          setMessages([...messages, ...result]); // Append new message to chat
           setNewMessage(""); // Clear input field
         }
       } catch (error) {
@@ -49,10 +73,11 @@ const AftSecChat = () => {
     }
   };
 
+
   if (loading) {
     return <div>Loading chat messages...</div>;
   }
-    */
+
 
   return (
     <div className="flex h-screen">
@@ -88,7 +113,7 @@ const AftSecChat = () => {
                 className="w-10 h-10 rounded-full mr-3"
               />
               <div>
-                <div className="font-semibold">After Primary School Journey</div>
+                <div className="font-semibold">Journey After Primary School</div>
                 <div className="text-sm text-gray-500">Welcome to the...?</div>
               </div>
             </div>
@@ -102,7 +127,7 @@ const AftSecChat = () => {
                 className="w-10 h-10 rounded-full mr-3"
               />
               <div>
-                <div className="font-semibold">After Secondary School Journey</div>
+                <div className="font-semibold">Journey After Secondary School</div>
                 <div className="text-sm text-gray-500">Welcome to the...?</div>
               </div>
             </div>
@@ -111,17 +136,27 @@ const AftSecChat = () => {
         </div>
       </div>
 
+
       {/* Main chat area */}
       <div className="w-3/4 bg-FFF1DB flex flex-col">
         {/* Chat header */}
         <div className="p-6 bg-blue border-b border-gray-300">
-          <h2 className="text-2xl font-bold text-536493">After Primary School Journey</h2>
+          <h2 className="text-2xl font-bold text-536493">Journey After Secondary School</h2>
           <p className="text-500">389 members, 180 online</p>
         </div>
 
+
         {/* Chat messages */}
-        <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center"> </div>
-        
+        <div className="p-6 flex-grow overflow-auto">
+          {messages.map((msg, index) => (
+            <div key={index} className="mb-4">
+              <div className="bg-gray-200 p-2 rounded-lg">
+                {msg.message}
+              </div>
+            </div>
+          ))}
+        </div>
+
 
         {/* Chat input */}
         <div className="justify-bottom bg-yellow  border-t border-gray-300  rounded-full flex items-center space-x-4">
@@ -130,13 +165,13 @@ const AftSecChat = () => {
             type="text"
             placeholder="Type Your Message..."
             className="flex-grow px-4 py-2 border border-yellow bg-yellow rounded focus:outline-none"
-            //value={newMessage}
-            //onChange={(e) => setNewMessage(e.target.value)}
-            //onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
           />
           <button
             className="px-6 py-2 bg-blue text-white rounded-full hover:shadow-lg transition-shadow duration-300"
-            //onClick={handleSendMessage}
+            onClick={handleSendMessage}
           >
             Send
           </button>
@@ -145,5 +180,6 @@ const AftSecChat = () => {
     </div>
   );
 };
+
 
 export default AftSecChat;
