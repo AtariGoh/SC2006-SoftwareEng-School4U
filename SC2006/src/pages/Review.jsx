@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Review = () => {
   const [ratings, setRatings] = useState({
@@ -9,18 +9,24 @@ const Review = () => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false); // 控制是否已提交
 
-  // Handle star rating clicks
+  // 使用 useEffect 在页面加载时执行某些代码（如果需要）
+  useEffect(() => {
+    console.log("Component loaded");
+  }, []); // 空数组表示只在组件首次加载时执行
+
+  // 处理评分点击事件
   const handleRating = (category, value) => {
     setRatings({ ...ratings, [category]: value });
   };
 
-  // Clear rating for a specific category
+  // 清除评分
   const clearRating = (category) => {
     setRatings({ ...ratings, [category]: 0 });
   };
 
-  // Submit review to backend
+  // 提交评论到后端
   const submitReview = async () => {
     setLoading(true);
     setError(null);
@@ -33,18 +39,21 @@ const Review = () => {
     };
 
     try {
-      const response = await fetch("https://your-api.com/reviews", {
+      // 将 fetch 请求发送到后端 API
+      const response = await fetch("http://localhost:5000/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(reviewData),
+        body: JSON.stringify(reviewData), // 将评论数据序列化为 JSON 格式
       });
 
       if (!response.ok) {
         throw new Error("Failed to submit review. Please try again.");
       }
 
+      // 提交成功
+      setSubmitted(true);
       alert("Thank you for your feedback!");
       setRatings({ features: 0, accessibility: 0, useful: 0 });
       setComment("");
@@ -56,7 +65,7 @@ const Review = () => {
     }
   };
 
-  // Star component with animation
+  // 星级组件
   const Star = ({ filled, onClick }) => (
     <span
       onClick={onClick}
@@ -68,7 +77,7 @@ const Review = () => {
     </span>
   );
 
-  // Render stars with a styled clear button
+  // 渲染星级评分
   const renderStars = (category) => (
     <div className="flex flex-col items-center space-y-2">
       <div className="flex justify-center gap-2">
@@ -96,7 +105,10 @@ const Review = () => {
           We would like to hear from you!
         </h1>
 
-        {/* Ratings Section */}
+        {/* 提交成功后提示 */}
+        {submitted && <p className="text-green-500 mb-4">Review submitted successfully!</p>}
+
+        {/* 评分部分 */}
         <div className="mb-6">
           <div className="mb-4">
             <label className="block text-lg font-medium">Features:</label>
@@ -112,11 +124,9 @@ const Review = () => {
           </div>
         </div>
 
-        {/* Comments Section */}
+        {/* 评论部分 */}
         <div className="mb-6">
-          <label className="block text-lg font-medium mb-2">
-            Other comments:
-          </label>
+          <label className="block text-lg font-medium mb-2">Other comments:</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -125,10 +135,10 @@ const Review = () => {
           />
         </div>
 
-        {/* Error Message */}
+        {/* 错误信息显示 */}
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
-        {/* Submit Button */}
+        {/* 提交按钮 */}
         <button
           onClick={submitReview}
           disabled={loading}
