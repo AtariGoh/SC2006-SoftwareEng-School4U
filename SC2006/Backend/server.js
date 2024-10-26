@@ -18,11 +18,26 @@ console.log('Supabase Key:', supabaseKey);
 // 导出 Supabase 客户端实例
 module.exports = supabase;
 */
-
+const allowedOrigins = [
+    "http://localhost:5173", // Local development
+  ];
+  
 // 导入路由
 app.use(cookieParser());
-app.use(cors());
 app.use(express.json());
+app.use(
+    cors({
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
+      credentials: true,
+    })
+  );
+  
 
 // Import routes
 const authRoutes = require('./routes/userLoginSignUp');
