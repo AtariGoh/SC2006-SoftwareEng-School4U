@@ -1,51 +1,66 @@
 import React, { useState, useEffect } from "react";
-import { FaHeart, FaLink } from "react-icons/fa";
+import { FaLink, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import psgImage from "../assets/psg-image.png";
-import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
-import aftsec from "../assets/after-secondary.png"
 
 
 const PSGChat = () => {
+  const schools = [
+    { school_id: 1, name: 'Greenwood High School' },
+    { school_id: 2, name: 'Sunnydale Academy' },
+    { school_id: 3, name: 'Riverside School' },
+    { school_id: 4, name: 'Maple Leaf International School' },
+    { school_id: 5, name: 'Crescent Valley High' },
+    { school_id: 6, name: 'Oakwood Preparatory School' },
+    { school_id: 7, name: 'Hilltop Primary School' },
+    { school_id: 8, name: 'Pine Crest School' },
+    { school_id: 9, name: 'Lakeside Secondary School' },
+    { school_id: 10, name: 'Silver Oaks School' },
+  ];
+
+
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+  const [selectedSchool, setSelectedSchool] = useState(schools[0].school_id);
 
 
-  // Fetch messages when component loads
   useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/psgchat");
-        const contentType = response.headers.get("content-type");
-       
-        if (contentType && contentType.includes("application/json")) {
+    if (selectedSchool) {
+      const fetchMessages = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/psgchat/${selectedSchool}`);
           const data = await response.json();
           setMessages(data);
-        } else {
-          console.error("Expected JSON but got", contentType);
-          const text = await response.text();
-          console.error("Response text:", text);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching messages:", error);
+          setLoading(false);
         }
-
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching messages:", error);
-        setLoading(false);
-      }
-    };
-    fetchMessages();
-
-
-    // Fetch messages every 2 seconds (000 ms)
-    const intervalId = setInterval(() => {
+      };
+     
+      // Initial fetch and setting interval for updates
       fetchMessages();
-    }, 2000);
+      const intervalId = setInterval(fetchMessages, 2000);
+      return () => clearInterval(intervalId);
+    }
+  }, [selectedSchool]);
 
 
-    // Cleanup function to clear the interval on component unmount
-    return () => clearInterval(intervalId);
-  }, []);
+  useEffect(() => {
+    if (searchTerm) {
+      const results = messages
+        .map((msg, index) => ({ ...msg, index }))
+        .filter((msg) => msg.message && msg.message.toLowerCase().includes(searchTerm.toLowerCase()));
+      setSearchResults(results);
+      setCurrentSearchIndex(0);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchTerm, messages]);
 
 
   const handleSendMessage = async () => {
@@ -53,17 +68,15 @@ const PSGChat = () => {
       try {
         const response = await fetch("http://localhost:5000/api/psgchat/messages", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message: newMessage }), // Send only the message for now
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: newMessage, school_id: selectedSchool }),
         });
 
 
         if (response.ok) {
           const result = await response.json();
-          setMessages([...messages, ...result]); // Append new message to chat
-          setNewMessage(""); // Clear input field
+          setMessages([...messages, result]);
+          setNewMessage("");
         }
       } catch (error) {
         console.error("Error sending message:", error);
@@ -72,92 +85,115 @@ const PSGChat = () => {
   };
 
 
-  if (loading) {
-    return <div>Loading chat messages...</div>;
-  }
+  const handleSearchNavigation = (direction) => {
+    let newIndex = currentSearchIndex;
+    if (direction === "up" && currentSearchIndex > 0) newIndex--;
+    else if (direction === "down" && currentSearchIndex < searchResults.length - 1) newIndex++;
+   
+    if (newIndex !== currentSearchIndex) {
+      setCurrentSearchIndex(newIndex);
+      document.getElementById(`message-${searchResults[newIndex].index}`)
+        .scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
+
+  const filteredSchools = schools.filter((school) =>
+    school.name.toLowerCase().includes(schoolSearch.toLowerCase())
+  );
 
 
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-1/4 bg-brown p-6">
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search your chat"
-            className="w-full p-3 rounded-full bg-gray-100 focus:outline-none border border-gray-300"
-          />
-        </div>
-        <div className="flex flex-col space-y-4">
-          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
-            <div className="flex items-center">
-              <img
-                src={psgImage}
-                alt="Group"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div>
-                <div className="font-semibold">Parents Support Group</div>
-                <div className="text-sm text-gray-500">Welcome to the...</div>
-              </div>
-            </div>
-            <FaHeart className="text-red-500" />
-          </div>
-          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
-            <div className="flex items-center">
-              <img
-                src={afterpri}
-                alt="Group"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div>
-                <div className="font-semibold">Journey After Primary School</div>
-                <div className="text-sm text-gray-500">Welcome to the...?</div>
-              </div>
-            </div>
-            <FaHeart className="text-yellow-500" />
-          </div>
-          <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow">
-            <div className="flex items-center">
-              <img
-                src={aftsec}
-                alt="Group"
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div>
-                <div className="font-semibold">Journey After Secondary School</div>
-                <div className="text-sm text-gray-500">Welcome to the...?</div>
-              </div>
-            </div>
-            <FaHeart className="text-yellow-500" />
-          </div>
+      <div className="w-64 bg-gray-100 p-4 border-r border-gray-300">
+        <h3 className="text-lg font-bold mb-4">Select School</h3>
+        <input
+          type="text"
+          placeholder="Search your school"
+          className="w-full p-2 mb-4 bg-yellow border border-black rounded-full"
+          value={schoolSearch}
+          onChange={(e) => setSchoolSearch(e.target.value)}
+        />
+        <div className="overflow-auto h-64">
+          {filteredSchools.map((school) => (
+            <button
+              key={school.school_id}
+              onClick={() => setSelectedSchool(school.school_id)}
+              className={`block w-full text-left p-2 rounded-lg mb-2 ${
+                selectedSchool === school.school_id ? "bg-blue text-white" : "bg-gray-200"
+              }`}
+            >
+              {school.name}
+            </button>
+          ))}
         </div>
       </div>
 
 
-      {/* Main chat area */}
-      <div className="w-3/4 bg-FFF1DB flex flex-col">
-        {/* Chat header */}
-        <div className="p-6 bg-blue border-b border-gray-300">
-          <h2 className="text-2xl font-bold text-536493">Parents Support Group</h2>
-          <p className="text-500">389 members, 180 online</p>
-        </div>
-
-
-        {/* Chat messages */}
-        <div className="p-6 flex-grow overflow-auto">
-          {messages.map((msg, index) => (
-            <div key={index} className="mb-4">
-              <div className="bg-gray-200 p-2 rounded-lg">
-                {msg.message}
+      {/* Main Chat Section */}
+      <div className="flex flex-col flex-grow h-full bg-FFF1DB">
+        <div className="p-4 bg-brown flex justify-between items-center border-b border-gray-300">
+          <div className="flex items-center">
+            <img src={psgImage} alt="Group" className="w-12 h-12 rounded-full mr-3" />
+            <h2 className="text-2xl font-bold text-536493">Parents Support Group</h2>
+          </div>
+          <div className="flex items-center">
+            <input
+              type="text"
+              placeholder="Search messages"
+              className="w-50 p-2 bg-yellow border border-black rounded-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchResults.length > 0 && (
+              <div className="flex space-x-2">
+                <button
+                  className="p-2 bg-gray-200 rounded-full"
+                  onClick={() => handleSearchNavigation("up")}
+                  disabled={currentSearchIndex === 0}
+                >
+                  <FaArrowUp />
+                </button>
+                <button
+                  className="p-2 bg-gray-200 rounded-full"
+                  onClick={() => handleSearchNavigation("down")}
+                  disabled={currentSearchIndex === searchResults.length - 1}
+                >
+                  <FaArrowDown />
+                </button>
               </div>
-            </div>
-          ))}
+            )}
+          </div>
         </div>
 
 
-        {/* Chat input */}
-        <div className="justify-bottom bg-yellow  border-t border-gray-300  rounded-full flex items-center space-x-4">
+        <div className="p-6 flex-grow overflow-auto">
+          {loading ? (
+            <div>Loading chat messages...</div>
+          ) : (
+            messages.map((msg, index) => {
+              const isHighlighted = searchResults.some((result) => result.index === index);
+              const isCurrentResult = searchResults[currentSearchIndex]?.index === index;
+
+
+              return (
+                <div
+                  key={index}
+                  id={`message-${index}`}
+                  className={`mb-4 p-2 rounded-lg ${
+                    isHighlighted ? "bg-yellow-200" : "bg-gray-200"
+                  } ${isCurrentResult ? "border-2 border-blue" : ""}`}
+                >
+                  {msg.message}
+                </div>
+              );
+            })
+          )}
+        </div>
+
+
+        <div className="bg-yellow border-t border-gray-300 p-4 flex items-center space-x-4">
           <FaLink className="text-dark" />
           <input
             type="text"
