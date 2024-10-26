@@ -4,15 +4,27 @@ import { useState, useEffect } from "react";
 import psgImage from "../assets/psg-image.png";
 import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
 import aftsec from "../assets/after-secondary.png"
+import { useLocation } from 'react-router-dom';
 
 const Chat = () => {
 
   const [isVerified, setIsVerified] = useState(false); // New state for authentication
   const[allChats, setAllChats]=useState([]);
+  const location = useLocation(); //to link compare dashboard 
   
   useEffect(() => {
 
     /*
+      // to link the comparison dashboard
+    useEffect(() => {
+      const searchParams = new URLSearchParams(location.search);
+      const schoolIdFromUrl = searchParams.get('school_id');
+      
+      if (schoolIdFromUrl) {
+        setSelectedSchool(Number(schoolIdFromUrl));
+      }
+    }, [location.search]);
+    
     const fetchChats = async () => {
       try {
         const response = await fetch('/api/chat');

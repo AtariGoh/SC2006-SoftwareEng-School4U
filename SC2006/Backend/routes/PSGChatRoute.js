@@ -6,12 +6,15 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 
 // Route to fetch all chat messages
-router.get('/psgchat', async (req, res) => {
+router.get('/psgchat/:school_id', async (req, res) => {
+  const{school_id}=req.params;
+
   try {
     // Fetching all messages from the 'PsgChat' table
     const { data: messages, error } = await supabase
       .from('PsgChat')
       .select('*')
+      .eq('school_id', school_id) // Filter messages by school_id
       .order('created_at', { ascending: true }); // Order by timestamp ascending
 
     if (error) {
@@ -26,12 +29,12 @@ router.get('/psgchat', async (req, res) => {
 
 // Route to post a new message
 router.post('/psgchat/messages', async (req, res) => {
-  const { message } = req.body;  // Destructure sender and message from the request body
+  const { message, school_id } = req.body;  // Destructure sender and message from the request body
 
   try {
     const { data, error } = await supabase
       .from('PsgChat')
-      .insert([{message }])   //add user 
+      .insert([{message, school_id }])   //add user 
       .select("*");
 
     if (error) {
