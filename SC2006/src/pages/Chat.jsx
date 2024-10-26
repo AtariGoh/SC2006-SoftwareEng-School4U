@@ -3,14 +3,10 @@ import ButtonCardForChat from "../components/ButtonCardForChat"; // Reusable car
 import { useState } from "react";
 import psgImage from "../assets/psg-image.png";
 import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
-import aftsec from "../assets/after-secondary.png"
-
+import aftsec from "../assets/after-secondary.png";
 
 const Chat = () => {
-
-
-  const[allChats]=useState([]);
-
+  const [allChats] = useState([]);
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -19,11 +15,11 @@ const Chat = () => {
         Join channel to understand the school life of your children.
       </p>
       <ul>
-        {allChats.map((chat)=>(
+        {allChats.map((chat) => (
           <li key={chat.id}>{chat.name}</li>
         ))}
       </ul>
-     
+
       {/* Flexbox container for horizontal alignment */}
       <div className="flex space-x-6">
         {/* Card 1 */}
@@ -38,13 +34,13 @@ const Chat = () => {
         />
       </div>
 
-
       <div className="mt-12">
         <h2 className="text-3xl font-bold mb-4">Your children's roadmap</h2>
         <p className="text-lg mb-6">
-          Join channel to understand what to expect in the transition to their next phase of journey.
+          Join channel to understand what to expect in the transition to their
+          next phase of journey.
         </p>
-       
+
         {/* Flexbox container for horizontal alignment */}
         <div className="flex space-x-6">
           {/* Card 4 */}
@@ -55,7 +51,6 @@ const Chat = () => {
             linkText="Join chat"
             linkHref="/aftprichat"
           />
-
 
           {/* Card 5 */}
           <ButtonCardForChat
@@ -71,8 +66,4 @@ const Chat = () => {
   );
 };
 
-
 export default Chat;
-
-
-
