@@ -1,35 +1,38 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import SchoolCard from "../components/SchoolCard"; // Import SchoolCard component
+import SchoolCard from "../components/SchoolCard";
+import axios from 'axios';
 
 const SearchSchools = () => {
   const navigate = useNavigate();
 
   // State management
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState([]); // Schools shown on the page
+  const [results, setResults] = useState([]);
+  const [ccas, setCCAs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Pagination and infinite scroll state
-  const [page, setPage] = useState(1); // Current page
-  const [hasMore, setHasMore] = useState(true); // Whether more data exists
-  const observer = useRef(); // Observer reference
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
 
   // Filter-related state
-  const [filtersVisible, setFiltersVisible] = useState(false); // Toggle filters section
+  const [filtersVisible, setFiltersVisible] = useState(false);
   const [level, setLevel] = useState("");
   const [programme, setProgramme] = useState("");
   const [location, setLocation] = useState("");
   const [sortBy, setSortBy] = useState("name-asc");
 
-  const SCHOOLS_PER_PAGE = 10; // Number of schools per page
+  const SCHOOLS_PER_PAGE = 10;
 
-  // Fetch schools with pagination from backend
   const fetchSchools = async (reset = false) => {
     try {
       setLoading(true);
-
+      setError(null);
+  
+      // Build query parameters
       const queryParams = new URLSearchParams({
         query,
         level,
@@ -39,35 +42,35 @@ const SearchSchools = () => {
         page,
         limit: SCHOOLS_PER_PAGE,
       });
-
-      const response = await fetch(
-        `https://your-api.com/schools?${queryParams.toString()}`
-      );
-
-      if (!response.ok) throw new Error("Failed to fetch schools.");
-
-      const data = await response.json();
-
-      setResults((prevResults) =>
-        reset ? data.schools || [] : [...prevResults, ...(data.schools || [])]
-      );
-      setHasMore((data.schools || []).length === SCHOOLS_PER_PAGE);
+  
+      // Fetch data from the server with updated route
+      const response = await axios.get(`http://localhost:5000/api/schools?${queryParams.toString()}`);
+  
+      // Ensure response is successful
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch schools.");
+      }
+  
+      // Parse and set school and CCA data from response
+    const { schools, ccas } = response.data; // Destructure the data
+    setResults((prevResults) => (reset ? schools : [...prevResults, ...schools]));
+    setCCAs(ccas); 
+    setHasMore(schools.length === SCHOOLS_PER_PAGE);
+  
     } catch (error) {
-      console.error(error);
-      setError("Failed to fetch schools.");
+      console.error("Error fetching data:", error);
+      setError("Failed to fetch schools. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
-  // Load schools on initial mount and whenever filters or query change
+  // Reset results and fetch on initial mount and whenever filters or query change
   useEffect(() => {
-    setPage(1); // Reset to first page
-
-    // Trigger a fetch only after resetting the page to 1
-    const timeoutId = setTimeout(() => fetchSchools(true), 0);
-
-    return () => clearTimeout(timeoutId); // Cleanup on unmount
+    setPage(1);
+    fetchSchools(true);
   }, [query, level, programme, location, sortBy]);
 
   // Fetch more schools when the page number changes
@@ -78,19 +81,19 @@ const SearchSchools = () => {
   // IntersectionObserver to detect when the bottom is reached
   const lastSchoolRef = useCallback(
     (node) => {
-      if (loading) return; // Avoid attaching observer while loading
+      if (loading) return;
 
-      if (observer.current) observer.current.disconnect(); // Cleanup previous observer
+      if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          setPage((prevPage) => prevPage + 1); // Increment page number
+          setPage((prevPage) => prevPage + 1);
         }
       });
 
-      if (node) observer.current.observe(node); // Attach observer to new node
+      if (node) observer.current.observe(node);
     },
-    [loading, hasMore] // Dependencies to recreate the observer
+    [loading, hasMore]
   );
 
   const handleClear = () => {
@@ -98,14 +101,11 @@ const SearchSchools = () => {
     setLevel("");
     setProgramme("");
     setLocation("");
-    setSortBy("name-asc"); // Reset to default sort
-
-    // Optionally, trigger a fetch manually after resetting filters if needed
+    setSortBy("name-asc");
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Main Content */}
       <div className="flex-grow p-8">
         {/* Secondary Navbar - Filters */}
         <div className="flex items-center space-x-4 bg-[#EF5A6F] p-4 rounded-md mb-4 text-black">
@@ -194,12 +194,12 @@ const SearchSchools = () => {
               key={school.id}
             >
               <SchoolCard
-                name={school.name}
+                name={school.school_name}
                 programme={school.programme}
                 location={school.location}
                 onClick={() => !loading && navigate(`/school/${school.id}`)}
-                onCompare={() => console.log(`Added ${school.name} to compare`)}
-                onReview={() => console.log(`Reviewing ${school.name}`)}
+                onCompare={() => console.log(`Added ${school.school_name} to compare`)}
+                onReview={() => console.log(`Reviewing ${school.school_name}`)}
               />
             </div>
           ))}
