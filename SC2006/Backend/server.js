@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cookieParser());
 app.use(cors());
 app.use(express.json());
-
+/// import jwt verification function
+const verifyToken = require('./Auth')
 
 // Import routes
 const authRoutes = require('./routes/userLoginSignUp');
