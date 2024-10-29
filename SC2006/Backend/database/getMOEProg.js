@@ -7,7 +7,8 @@ const url = "https://data.gov.sg/api/action/datastore_search?resource_id="  + mo
 // Function to get data from the API
 async function getMOEProgramsData(queryParams) {
     try {
-      const response = await axios.get(`${url}&${queryParams.toString()}`);
+      const queryString = JSON.stringify({ school_name: queryParams });
+      const response = await axios.get(`${url}&q=${queryString}`);
       const moeprogs = response.data.result.records;
   
       return moeprogs.map ((moeprog, index) => ({

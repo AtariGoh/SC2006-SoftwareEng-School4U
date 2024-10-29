@@ -14,7 +14,7 @@ const SchoolCard = ({ name, programme, location, onCompare }) => {
     >
       <div>
         <h2 className="text-xl font-bold">{name}</h2>
-        <p className="text-gray-700">Special Programme: {programme}</p>
+        <p className="text-gray-700">Postal Code: {programme}</p>
         <p className="text-gray-700">Location: {location}</p>
       </div>
       <div className="space-x-2">

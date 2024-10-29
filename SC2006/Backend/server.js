@@ -36,12 +36,25 @@ const getMOEProgramsData = require('./database/getMOEProg');
 app.get('/api/schools', async (req, res) => {
     try {
       // Use Promise.all to fetch both datasets concurrently
+
+      const queryParamsName =  req.query.query
+      const queryParamsLevel = req.query.level;
+      const queryParamsLocation = req.query.location
+      const querySort = req.query.sortBy;
+      const queryNameLevel = {
+        name: queryParamsName,
+        level: queryParamsLevel,
+        location: queryParamsLocation,
+        sort: querySort
+      };
+
+      console.log("what the",req.query)
       const [schoolData, ccaData, distProgData, subjectsData, moeprogData] = await Promise.all([
-        getSchoolData(req.query),
+        getSchoolData(queryNameLevel),
         getCCAData(req.query), 
         getDistProgData(req.query),
         getSubjectsData(req.query),
-        getMOEProgramsData(req.query)
+        getMOEProgramsData(queryParamsName)
       ]);
   
       // Log two examples to check what’s being sent to the client
@@ -49,7 +62,7 @@ app.get('/api/schools', async (req, res) => {
       //console.log("Example CCA data being sent to frontend:", ccaData.slice(0, 2));
       //console.log("Example distProg data being sent to frontend:", distProgData.slice(0, 2)); 
       //console.log("Example subjects data being sent to frontend:", subjectsData.slice(0, 2)); 
-      //console.log("Example MOE programmes data being sent to frontend:", moeprogData.slice(0, 2)); 
+     //console.log("Example MOE programmes data being sent to frontend:", moeprogData.slice(0, 2)); 
   
       // Return both datasets in a structured response
       res.json({ schools: schoolData, ccas: ccaData, distProgs:distProgData, subjects: subjectsData, moeprog: moeprogData }); // Send a single object

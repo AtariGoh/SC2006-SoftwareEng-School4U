@@ -167,21 +167,14 @@ const SearchSchools = () => {
             <div className="flex space-x-4">
               <input
                 type="text"
-                placeholder="Level (e.g., Primary, Secondary)"
+                placeholder="Level (Primary, Secondary)"
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
                 className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
               />
               <input
                 type="text"
-                placeholder="Programme"
-                value={programme}
-                onChange={(e) => setProgramme(e.target.value)}
-                className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
-              />
-              <input
-                type="text"
-                placeholder="Location"
+                placeholder="Location (North, South, East, West)"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
@@ -203,8 +196,8 @@ const SearchSchools = () => {
             >
               <SchoolCard
                 name={school.school_name}
-                programme={school.programme}
-                location={school.location}
+                programme={school.postal_code}
+                location={school.address}
                 onClick={() => !loading && navigate(`/school/${school.id}`)}
                 onCompare={() => console.log(`Added ${school.school_name} to compare`)}
                 onReview={() => console.log(`Reviewing ${school.school_name}`)}
