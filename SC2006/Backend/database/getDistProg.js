@@ -1,21 +1,22 @@
-// backend/database/getCCAs.js
+
 const axios = require('axios');
 
-const CCAdata = "d_9aba12b5527843afb0b2e8e4ed6ac6bd"
-const url = "https://data.gov.sg/api/action/datastore_search?resource_id="  + CCAdata; 
+const distProg = "d_db1faeea02c646fa3abccfa5aba99214"
+const url = "https://data.gov.sg/api/action/datastore_search?resource_id="  + distProg; 
 
 // Function to get data from the API
-async function getCCAData(queryParams) {
+async function getDistProgData(queryParams) {
     try {
       const response = await axios.get(`${url}&${queryParams.toString()}`);
-      const ccas = response.data.result.records;
+      const distprogs = response.data.result.records;
   
-      return ccas.map((cca, index) => ({
+      return distprogs.map ((distprog, index) => ({
         id: index + 1,
-        school_name: cca.school_name,
-        school_section: cca.school_section,
-        category: cca.cca_grouping_desc,
-        cca_name: cca.cca_generic_name,
+        school_name: distprog.school_name,
+        category: distprog.alp_domain,
+        prog_name: distprog.alp_title,
+        category_1: distprog.llp_domain1,
+        prog_name_1: distprog.llp_title1,
       }));
 
       
@@ -26,4 +27,4 @@ async function getCCAData(queryParams) {
   }
   
 
-module.exports = getCCAData;
+module.exports = getDistProgData;

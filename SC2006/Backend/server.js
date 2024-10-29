@@ -27,23 +27,32 @@ app.use('/api', aftSecChatRoutes);
 // Import the getSchoolData function
 const getSchoolData = require('./database/getSchools');
 const getCCAData = require('./database/getCCAs');
+const getDistProgData = require('./database/getDistProg');
+const getSubjectsData = require('./database/getSubjects');
+const getMOEProgramsData = require('./database/getMOEProg');
 
 // Update route definition to match the frontend
 // Update route definition to match the frontend
 app.get('/api/schools', async (req, res) => {
     try {
       // Use Promise.all to fetch both datasets concurrently
-      const [schoolData, ccaData] = await Promise.all([
+      const [schoolData, ccaData, distProgData, subjectsData, moeprogData] = await Promise.all([
         getSchoolData(req.query),
-        getCCAData(req.query) // Use req.query to pass query parameters if needed
+        getCCAData(req.query), 
+        getDistProgData(req.query),
+        getSubjectsData(req.query),
+        getMOEProgramsData(req.query)
       ]);
   
       // Log two examples to check what’s being sent to the client
       console.log("Example school data being sent to frontend:", schoolData.slice(0, 2));
-      console.log("Example CCA data being sent to frontend:", ccaData.slice(0, 2)); // Log CCA data
+      //console.log("Example CCA data being sent to frontend:", ccaData.slice(0, 2));
+      //console.log("Example distProg data being sent to frontend:", distProgData.slice(0, 2)); 
+      //console.log("Example subjects data being sent to frontend:", subjectsData.slice(0, 2)); 
+      //console.log("Example MOE programmes data being sent to frontend:", moeprogData.slice(0, 2)); 
   
       // Return both datasets in a structured response
-      res.json({ schools: schoolData, ccas: ccaData }); // Send a single object
+      res.json({ schools: schoolData, ccas: ccaData, distProgs:distProgData, subjects: subjectsData, moeprog: moeprogData }); // Send a single object
     } catch (error) {
       console.error("Error in /api/schools:", error);  // Add logging for debugging
       res.status(500).json({ error: "Failed to fetch school data" });

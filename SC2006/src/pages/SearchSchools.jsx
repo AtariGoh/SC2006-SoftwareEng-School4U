@@ -10,6 +10,9 @@ const SearchSchools = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [ccas, setCCAs] = useState([]);
+  const [distProgs, setdistProg] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [moeprog, setMOEProg] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -45,16 +48,20 @@ const SearchSchools = () => {
   
       // Fetch data from the server with updated route
       const response = await axios.get(`http://localhost:5000/api/schools?${queryParams.toString()}`);
-  
+      console.log("Query Parameters:", queryParams.toString());
+
       // Ensure response is successful
       if (response.status !== 200) {
         throw new Error("Failed to fetch schools.");
       }
   
       // Parse and set school and CCA data from response
-    const { schools, ccas } = response.data; // Destructure the data
+    const { schools, ccas, distProgs, subjects, moeprog } = response.data; // Destructure the data
     setResults((prevResults) => (reset ? schools : [...prevResults, ...schools]));
     setCCAs(ccas); 
+    setdistProg(distProgs);
+    setSubjects(subjects);
+    setMOEProg(moeprog);
     setHasMore(schools.length === SCHOOLS_PER_PAGE);
   
     } catch (error) {
@@ -102,6 +109,7 @@ const SearchSchools = () => {
     setProgramme("");
     setLocation("");
     setSortBy("name-asc");
+    fetchSchools(true); 
   };
 
   return (
