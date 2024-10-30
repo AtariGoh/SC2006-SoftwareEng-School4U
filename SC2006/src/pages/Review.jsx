@@ -10,14 +10,17 @@ const Review = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Handle star rating clicks
   const handleRating = (category, value) => {
     setRatings({ ...ratings, [category]: value });
   };
 
+  // Clear rating for a specific category
   const clearRating = (category) => {
     setRatings({ ...ratings, [category]: 0 });
   };
 
+  // Submit review to backend
   const submitReview = async () => {
     setLoading(true);
     setError(null);
@@ -53,6 +56,7 @@ const Review = () => {
     }
   };
 
+  // Star component with animation
   const Star = ({ filled, onClick }) => (
     <span
       onClick={onClick}
@@ -64,6 +68,7 @@ const Review = () => {
     </span>
   );
 
+  // Render stars with a styled clear button
   const renderStars = (category) => (
     <div className="flex flex-col items-center space-y-2">
       <div className="flex justify-center gap-2">
@@ -85,7 +90,7 @@ const Review = () => {
   );
 
   return (
-    <div className="min-h-screen pt-16 flex flex-col items-center justify-center bg-white mb-0">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white mb-3">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
         <h1 className="text-3xl font-bold text-[#EF5A6F] mb-6">
           We would like to hear from you!

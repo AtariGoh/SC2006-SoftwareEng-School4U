@@ -5,7 +5,6 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 
-
 // Route to fetch all chat messages
 router.get('/psgchat/:school_id', async (req, res) => {
   const{school_id}=req.params;
@@ -22,26 +21,21 @@ router.get('/psgchat/:school_id', async (req, res) => {
       throw new Error('Error fetching messages');
     }
 
-
     res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-
 // Route to post a new message
 router.post('/psgchat/messages', async (req, res) => {
   const { message, school_id } = req.body;  // Destructure sender and message from the request body
 
-
   try {
     const { data, error } = await supabase
       .from('PsgChat')
-
       .insert([{message, school_id }])   //add user 
       .select("*");
-=======
 
     if (error) {
       throw new Error('Error posting message');
@@ -56,6 +50,5 @@ router.post('/psgchat/messages', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 module.exports = router;

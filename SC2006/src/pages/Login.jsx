@@ -1,21 +1,22 @@
-// src/pages/Login.jsx
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useState } from 'react'; 
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Login = () => {
-  const [loginData, setLoginData] = useState({ username: "", password: "" });
-  const { setLoggedIn } = useAuth(); // Use setLoggedIn from AuthContext
+  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const { loggedIn, setLoggedIn } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLoginData({ ...loginData, [name]: value });
+    setLoginData({
+      ...loginData,
+      [name]: value,
+    });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
     try {
-
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: {
@@ -26,30 +27,30 @@ const Login = () => {
           password: loginData.password,
         }),
           credentials: 'include'
-
       });
 
       if (response.ok) {
-        setLoggedIn(true); // Update AuthContext state to logged in
-        localStorage.setItem("isAuthenticated", "true"); // Persist login state
-      } else {
+        const result = await response.json();
+        setLoggedIn(true); // Assume user is logged in if the login request succeeds
+      }
+       else {
         const error = await response.json();
         alert(error.error);
       }
     } catch (err) {
-      console.error("Error:", err);
+      console.error('Error:', err); 
     }
+    
+    console.log(loginData);  // This will now log the user and password correctly
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Login</h2>
-      <form onSubmit={handleSubmit}>
-        {" "}
-        {/* Attach handleSubmit */}
+      <form onSubmit={handleSubmit}> {/* Attach the onSubmit handler here */}
         <input
           type="text"
-          name="username"
+          name="username" 
           placeholder="Username"
           className="w-full p-2 mb-3 border rounded-2xl bg-[#FAEDCE]"
           value={loginData.username}
@@ -63,10 +64,7 @@ const Login = () => {
           value={loginData.password}
           onChange={handleChange}
         />
-        <button
-          type="submit"
-          className="w-full bg-[#EF5A6F] text-white py-2 rounded"
-        >
+        <button type="submit" className="w-full bg-[#EF5A6F] text-white py-2 rounded">
           Login
         </button>
       </form>

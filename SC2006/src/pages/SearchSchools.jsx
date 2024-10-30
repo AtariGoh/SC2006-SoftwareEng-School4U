@@ -6,15 +6,15 @@ import axios from 'axios';
 const SearchSchools = () => {
   const navigate = useNavigate();
 
+  // State management
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-
   const [ccas, setCCAs] = useState([]);
   const [distProgs, setdistProg] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [moeprog, setMOEProg] = useState([]);
-
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Pagination and infinite scroll state
   const [page, setPage] = useState(1);
@@ -22,7 +22,6 @@ const SearchSchools = () => {
   const observer = useRef();
 
   // Filter-related state
-
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [level, setLevel] = useState("");
   const [programme, setProgramme] = useState("");
@@ -34,11 +33,9 @@ const SearchSchools = () => {
   const fetchSchools = async (reset = false) => {
     try {
       setLoading(true);
-
       setError(null);
   
       // Build query parameters
-
       const queryParams = new URLSearchParams({
         query,
         level,
@@ -48,7 +45,6 @@ const SearchSchools = () => {
         page,
         limit: SCHOOLS_PER_PAGE,
       });
-
   
       // Fetch data from the server with updated route
       const response = await axios.get(`http://localhost:5000/api/schools?${queryParams.toString()}`);
@@ -68,7 +64,6 @@ const SearchSchools = () => {
     setMOEProg(moeprog);
     setHasMore(schools.length === SCHOOLS_PER_PAGE);
   
-
     } catch (error) {
       console.error("Error fetching data:", error);
       setError("Failed to fetch schools. Please try again later.");
@@ -79,22 +74,21 @@ const SearchSchools = () => {
   
   
 
-
   // Reset results and fetch on initial mount and whenever filters or query change
   useEffect(() => {
     setPage(1);
     fetchSchools(true);
-
   }, [query, level, programme, location, sortBy]);
 
+  // Fetch more schools when the page number changes
   useEffect(() => {
     if (page > 1) fetchSchools();
   }, [page]);
 
+  // IntersectionObserver to detect when the bottom is reached
   const lastSchoolRef = useCallback(
     (node) => {
       if (loading) return;
-
 
       if (observer.current) observer.current.disconnect();
 
@@ -115,7 +109,6 @@ const SearchSchools = () => {
     setProgramme("");
     setLocation("");
     setSortBy("name-asc");
-
     fetchSchools(true); 
   };
 
@@ -123,8 +116,6 @@ const SearchSchools = () => {
     <div className="flex flex-col min-h-screen">
       <div className="flex-grow p-8">
         {/* Secondary Navbar - Filters */}
-
-
         <div className="flex items-center space-x-4 bg-[#EF5A6F] p-4 rounded-md mb-4 text-black">
           <input
             type="text"
@@ -155,6 +146,7 @@ const SearchSchools = () => {
             Clear
           </button>
 
+          {/* Sorted by Dropdown aligned to the right */}
           <div className="ml-auto flex items-center space-x-2">
             <label className="text-black">Sorted by:</label>
             <select
@@ -169,6 +161,7 @@ const SearchSchools = () => {
           </div>
         </div>
 
+        {/* Toggleable Filters Section */}
         {filtersVisible && (
           <div className="flex flex-col space-y-4 mb-4 p-4 bg-[#EF5A6F] rounded-md">
             <div className="flex space-x-4">
@@ -190,9 +183,11 @@ const SearchSchools = () => {
           </div>
         )}
 
+        {/* Loading and Error States */}
         {loading && <p className="text-center">Loading schools...</p>}
         {error && <p className="text-center text-red-500">{error}</p>}
 
+        {/* Display Search Results */}
         <div className="grid gap-4">
           {results.map((school, index) => (
             <div
@@ -211,6 +206,7 @@ const SearchSchools = () => {
           ))}
         </div>
 
+        {/* No Results Found */}
         {!loading && results.length === 0 && (
           <p className="text-center text-gray-500">No schools found.</p>
         )}
