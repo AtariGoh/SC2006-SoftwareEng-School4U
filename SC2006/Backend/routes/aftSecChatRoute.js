@@ -5,9 +5,11 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 
+
 // Route to fetch all chat messages
 router.get('/aschat/:school_id', async (req, res) => {
   const{school_id}=req.params;
+
 
   try {
     // Fetching all messages from the 'asChat' table
@@ -17,9 +19,11 @@ router.get('/aschat/:school_id', async (req, res) => {
       .eq('school_id', school_id) // Filter messages by school_id
       .order('created_at', { ascending: true }); // Order by timestamp ascending
 
+
     if (error) {
       throw new Error('Error fetching messages');
     }
+
 
     res.status(200).json(messages);
   } catch (error) {
@@ -27,13 +31,16 @@ router.get('/aschat/:school_id', async (req, res) => {
   }
 });
 
+
 // Route to post a new message
 router.post('/aschat/messages', async (req, res) => {
   const { message, school_id } = req.body;  // Destructure sender and message from the request body
 
+
   try {
     const { data, error } = await supabase
       .from('AsChat')
+
       .insert([{message, school_id }])   //add user 
       .select("*");
 
@@ -45,10 +52,12 @@ router.post('/aschat/messages', async (req, res) => {
     const result = data[0].message;
     res.status(201).json(result);
 
+
   } catch (error) {
     console.log("error in aschat", error);
     res.status(500).json({ message: error.message });
   }
 });
+
 
 module.exports = router;

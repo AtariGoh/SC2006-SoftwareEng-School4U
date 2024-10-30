@@ -1,14 +1,14 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react"; // Remove useState, useEffect stays
 import HomePage from "./pages/Homepage";
-import LoginRegister from "./pages/LoginRegister"; // Handles both Login & Register
-import Login from './pages/Login'
+import LoginRegister from "./pages/LoginRegister";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ComparisonDashboard from "./pages/ComparisonDashboard";
 import Chat from "./pages/Chat";
 import PSGChat from "./pages/PSGChat";
 import AftPriChat from "./pages/AftPriChat";
 import AftSecChat from "./pages/AftSecChat";
-import AuthForChat from "./pages/AuthForChat";
 import SearchSchools from "./pages/SearchSchools";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
@@ -21,12 +21,14 @@ const App = () => {
     await fetch(`$http://localhost:5000/api/logout`, { method: 'POST', credentials: 'include' });
     setLoggedIn(false);
     window.location.href = '/'; // Optional: Redirect to homepage on logout
+
+
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       {/* NavBar */}
-      <nav className="fixed top-0 left-0 w-full bg-[#536493] py-4 text-white shadow-md z-50">
+      <nav className="fixed top-0 left-0 w-full bg-[#536493] py-2.5 text-white shadow-md z-40">
         <div className="container mx-auto flex items-center justify-between">
           {/* Logo */}
           <div
@@ -54,18 +56,20 @@ const App = () => {
               </Link>
             </li>
             <li className="flex-grow text-center">
-            <Link to="/chat" className="hover:underline">
+              <Link to="/chat" className="hover:underline">
                 Chat Forum
               </Link>
             </li>
             <li className="flex-grow text-center">
               {loggedIn ? (
+
                 // Render Logout button if logged in
                 <button onClick={handleLogout} className="hover:underline">
                   Logout
                 </button>
               ) : (
                 // Render Login / Register link if not logged in
+
                 <Link to="/loginAndRegister/login" className="hover:underline">
                   Login / Register
                 </Link>
@@ -74,26 +78,26 @@ const App = () => {
           </ul>
         </div>
       </nav>
+
       {/* Page Content */}
-      <div className="pt-16"></div> {/* Adjusted padding to avoid overlap */}
-      <div className="pt-20">
+      <div className="flex-grow pt-16">
+        {/* Routes */}
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/loginAndRegister" element={<LoginRegister />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
           </Route>
-          {/* Correct Route */}
           <Route path="/dashboard" element={<ComparisonDashboard />} />
           <Route path="/search" element={<SearchSchools />} />
-          <Route path = "/chat" element={<Chat />} />
-          <Route path = "/psgchat" element ={<PSGChat/>}/>
-          <Route path = "/aftprichat" element ={<AftPriChat/>}/>
-          <Route path = "/aftsecchat" element ={<AftSecChat/>}/>
-
+          <Route path="/chat" element={<Chat />} />
+          <Route path="/psgchat" element={<PSGChat />} />
+          <Route path="/aftprichat" element={<AftPriChat />} />
+          <Route path="/aftsecchat" element={<AftSecChat />} />
           <Route path="/review" element={<Review />} />
         </Routes>
       </div>
+
       {/* Footer */}
       <footer className="bg-[#536493] text-white py-6 text-center">
         <Link to="/review" className="hover:underline">
