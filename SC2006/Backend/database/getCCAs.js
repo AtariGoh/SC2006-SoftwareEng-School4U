@@ -5,11 +5,13 @@ const CCAdata = "d_9aba12b5527843afb0b2e8e4ed6ac6bd"
 const url = "https://data.gov.sg/api/action/datastore_search?resource_id="  + CCAdata; 
 
 // Function to get data from the API
-async function getCCAData(queryParams) {
+async function getCCAData(queryParamsCCA) {
     try {
-      const response = await axios.get(`${url}&${queryParams.toString()}`);
+      const queryString = JSON.stringify({ school_name: queryParamsCCA }); 
+      const response = await axios.get(`${url}&q=${queryString}`); 
+
       const ccas = response.data.result.records;
-  
+      
       return ccas.map((cca, index) => ({
         id: index + 1,
         school_name: cca.school_name,

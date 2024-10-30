@@ -68,20 +68,33 @@ app.get('/api/schools', async (req, res) => {
         location: queryParamsLocation,
         sort: querySort
       };
+      const queryParamsCCA = req.query.ccas;
+      const queryParamsSubjects = req.query.subjects;
+      const queryParamsProg = req.query.distProgs;
 
       console.log("what the",req.query)
+      console.log("Incoming request parameters:", {
+        name: queryParamsName,
+        level: queryParamsLevel,
+        location: queryParamsLocation,
+        sortBy: querySort,
+        ccas: queryParamsCCA,
+        subjects: queryParamsSubjects,
+        distProgs: queryParamsProg
+      });
+
       const [schoolData, ccaData, distProgData, subjectsData, moeprogData] = await Promise.all([
         getSchoolData(queryNameLevel),
-        getCCAData(req.query), 
-        getDistProgData(req.query),
-        getSubjectsData(req.query),
+        getCCAData(queryParamsCCA), 
+        getDistProgData(queryParamsSubjects),
+        getSubjectsData(queryParamsProg),
         getMOEProgramsData(queryParamsName)
       ]);
   
       // Log two examples to check what’s being sent to the client
       console.log("Example school data being sent to frontend:", schoolData.slice(0, 2));
       //console.log("Example CCA data being sent to frontend:", ccaData.slice(0, 2));
-      //console.log("Example distProg data being sent to frontend:", distProgData.slice(0, 2)); 
+      console.log("Example distProg data being sent to frontend:", distProgData.slice(0, 2)); 
       //console.log("Example subjects data being sent to frontend:", subjectsData.slice(0, 2)); 
      //console.log("Example MOE programmes data being sent to frontend:", moeprogData.slice(0, 2)); 
   

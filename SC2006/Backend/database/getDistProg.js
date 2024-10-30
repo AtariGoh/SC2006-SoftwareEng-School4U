@@ -7,7 +7,9 @@ const url = "https://data.gov.sg/api/action/datastore_search?resource_id="  + di
 // Function to get data from the API
 async function getDistProgData(queryParams) {
     try {
-      const response = await axios.get(`${url}&${queryParams.toString()}`);
+      const queryString = JSON.stringify({ school_name: queryParams }); 
+      const response = await axios.get(`${url}&q=${queryString}`); 
+
       const distprogs = response.data.result.records;
   
       return distprogs.map ((distprog, index) => ({

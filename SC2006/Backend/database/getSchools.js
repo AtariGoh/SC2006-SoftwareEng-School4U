@@ -27,6 +27,7 @@ async function getSchoolData(queryParams) {
       console.log(`${baseUrl}&q=${queryString}`)
       const schools = response.data.result.records;
       console.log(queryParams.sort)
+      
       if (queryParams.sort == "name-desc"){
         return schools.reverse().map((school, index) => ({
           id: index + 1,
