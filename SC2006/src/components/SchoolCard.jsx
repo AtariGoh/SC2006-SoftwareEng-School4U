@@ -15,7 +15,7 @@ const SchoolCard = ({ name, programme, location, onCompare }) => {
         body:JSON.stringify({data})
       });
       if (response.ok){
-        console.log("Success YAYYYYY");
+        console.log("Success YAYYYYY"); 
       }
       else{
         console.log("oh no :((((9")

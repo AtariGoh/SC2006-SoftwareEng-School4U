@@ -12,8 +12,17 @@ import AuthForChat from "./pages/AuthForChat";
 import SearchSchools from "./pages/SearchSchools";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
+import { useAuth } from './context/AuthContext.jsx';
 
 const App = () => {
+  const { loggedIn, setLoggedIn } = useAuth()
+
+  const handleLogout = async () => {
+    await fetch(`$http://localhost:5000/api/logout`, { method: 'POST', credentials: 'include' });
+    setLoggedIn(false);
+    window.location.href = '/'; // Optional: Redirect to homepage on logout
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       {/* NavBar */}
@@ -50,9 +59,17 @@ const App = () => {
               </Link>
             </li>
             <li className="flex-grow text-center">
-              <Link to="/loginAndRegister/login" className="hover:underline">
-                Login / Register
-              </Link>
+              {loggedIn ? (
+                // Render Logout button if logged in
+                <button onClick={handleLogout} className="hover:underline">
+                  Logout
+                </button>
+              ) : (
+                // Render Login / Register link if not logged in
+                <Link to="/loginAndRegister/login" className="hover:underline">
+                  Login / Register
+                </Link>
+              )}
             </li>
           </ul>
         </div>
