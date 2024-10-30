@@ -2,15 +2,35 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 require('dotenv').config();
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = [
+  "http://localhost:5173", // Local development
+];
+
 
 //Middleware
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
-/// import jwt verification function
+
+/// import jwt verification function which stores user_id
 const verifyToken = require('./Auth')
 
 // Import routes
@@ -73,6 +93,25 @@ app.get('/api/schools', async (req, res) => {
     }
   });
   
+
+
+  app.post('/api/addToFav',verifyToken, async(req,res)=>{
+    try {
+      const school_name = req.body.data;
+      console.log('Request Body:', school_name);
+      const user_id = req.userId;
+      console.log("id", user_id)
+      const { data, error } = await supabase
+        .from('fav_schools')
+        .insert([{ school_name, user_id }]);
+  
+      return res.status(200).json({message:"Book added to bookshelf"})
+    } catch (error) {
+      console.error("Supabase Error:", error);
+      res.status(500).json({ error: "An error occurred while adding book" });
+    }
+  })
+
 
 // Start the server
 app.listen(PORT, () => {

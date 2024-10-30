@@ -3,13 +3,30 @@ import { useNavigate } from "react-router-dom";
 const SchoolCard = ({ name, programme, location, onCompare }) => {
   const navigate = useNavigate();
 
+  // Add fav school to database linked to user
+  const favSchool = async(data)=>{
+    try {
+      const response = await fetch(`http://localhost:5000/api/addToFav`,{
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json',
+        },
+        credentials: 'include',
+        body:JSON.stringify({data})
+      });
+      if (response.ok){
+        console.log("Success YAYYYYY");
+      }
+      else{
+        console.log("oh no :((((9")
+      }
+    } catch (error) {
+      console.log("Runtime error :( ")
+    }
+  }
+
   return (
     <div
-      onClick={() =>
-        navigate("/school-review", {
-          state: { name, programme, location },
-        })
-      }
       className="p-4 bg-[#FAEDCE] border border-black shadow-md rounded-md flex justify-between items-center cursor-pointer hover:shadow-lg transition-shadow duration-300"
     >
       <div>
@@ -19,9 +36,8 @@ const SchoolCard = ({ name, programme, location, onCompare }) => {
       </div>
       <div className="space-x-2">
         <button
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent card click from triggering
-            onCompare();
+          onClick={() => { 
+            favSchool(name);
           }}
           className="bg-[#EF5A6F] text-white px-4 py-2 rounded-md"
         >

@@ -26,6 +26,7 @@ const Login = () => {
           username: loginData.username,
           password: loginData.password,
         }),
+          credentials: 'include'
       });
 
       if (response.ok) {
