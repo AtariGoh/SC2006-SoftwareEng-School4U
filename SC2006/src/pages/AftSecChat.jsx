@@ -4,6 +4,7 @@ import AsImage from "../assets/after-secondary.png";
 
 const AftSecChat = () => {
   const schools = [
+
     { school_id: 1, name: 'Greenwood High School' },
     { school_id: 2, name: 'Sunnydale Academy' },
     { school_id: 3, name: 'Riverside School' },
@@ -14,6 +15,7 @@ const AftSecChat = () => {
     { school_id: 8, name: 'Pine Crest School' },
     { school_id: 9, name: 'Lakeside Secondary School' },
     { school_id: 10, name: 'Silver Oaks School' },
+
   ];
 
   const [messages, setMessages] = useState([]);
@@ -29,7 +31,10 @@ const AftSecChat = () => {
     if (selectedSchool) {
       const fetchMessages = async () => {
         try {
+
           const response = await fetch(`http://localhost:5000/api/aschat/${selectedSchool}`);
+=======
+
           const data = await response.json();
           setMessages(data);
           setLoading(false);
@@ -38,7 +43,7 @@ const AftSecChat = () => {
           setLoading(false);
         }
       };
-      
+
       // Initial fetch and setting interval for updates
       fetchMessages();
       const intervalId = setInterval(fetchMessages, 2000);
@@ -50,7 +55,9 @@ const AftSecChat = () => {
     if (searchTerm) {
       const results = messages
         .map((msg, index) => ({ ...msg, index }))
+
         .filter((msg) => msg.message && msg.message.toLowerCase().includes(searchTerm.toLowerCase()));
+
       setSearchResults(results);
       setCurrentSearchIndex(0);
     } else {
@@ -61,11 +68,13 @@ const AftSecChat = () => {
   const handleSendMessage = async () => {
     if (newMessage.trim() !== "") {
       try {
+
         const response = await fetch("http://localhost:5000/api/aschat/messages", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: newMessage, school_id: selectedSchool }),
         });
+
 
         if (response.ok) {
           const result = await response.json();
@@ -81,11 +90,13 @@ const AftSecChat = () => {
   const handleSearchNavigation = (direction) => {
     let newIndex = currentSearchIndex;
     if (direction === "up" && currentSearchIndex > 0) newIndex--;
+
     else if (direction === "down" && currentSearchIndex < searchResults.length - 1) newIndex++;
     
     if (newIndex !== currentSearchIndex) {
       setCurrentSearchIndex(newIndex);
       document.getElementById(`message-${searchResults[newIndex].index}`)
+
         .scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
@@ -95,7 +106,7 @@ const AftSecChat = () => {
   );
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen pt-14">
       {/* Sidebar */}
       <div className="w-64 bg-gray-100 p-4 border-r border-gray-300">
         <h3 className="text-lg font-bold mb-4">Select School</h3>
@@ -106,13 +117,17 @@ const AftSecChat = () => {
           value={schoolSearch}
           onChange={(e) => setSchoolSearch(e.target.value)}
         />
+
         <div className="overflow-auto h-64">
+
           {filteredSchools.map((school) => (
             <button
               key={school.school_id}
               onClick={() => setSelectedSchool(school.school_id)}
               className={`block w-full text-left p-2 rounded-lg mb-2 ${
+
                 selectedSchool === school.school_id ? "bg-blue text-white" : "bg-gray-200"
+
               }`}
             >
               {school.name}
@@ -125,8 +140,10 @@ const AftSecChat = () => {
       <div className="flex flex-col flex-grow h-full bg-FFF1DB">
         <div className="p-4 bg-brown flex justify-between items-center border-b border-gray-300">
           <div className="flex items-center">
+
             <img src={AsImage} alt="Group" className="w-12 h-12 rounded-full mr-3" />
             <h2 className="text-2xl font-bold text-536493">Journey After Secondary School</h2>
+
           </div>
           <div className="flex items-center">
             <input
@@ -162,8 +179,10 @@ const AftSecChat = () => {
             <div>Loading chat messages...</div>
           ) : (
             messages.map((msg, index) => {
+
               const isHighlighted = searchResults.some((result) => result.index === index);
               const isCurrentResult = searchResults[currentSearchIndex]?.index === index;
+
 
               return (
                 <div

@@ -1,8 +1,9 @@
 import React from "react";
 import ButtonCardForChat from "../components/ButtonCardForChat"; // Reusable card component
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import psgImage from "../assets/psg-image.png";
 import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
+
 import aftsec from "../assets/after-secondary.png"
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -63,6 +64,7 @@ const Chat = () => {
   }, []);
 
 
+
   {/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> : */}
   return ( 
     <div className="p-6 max-w-7xl mx-auto">
@@ -71,11 +73,11 @@ const Chat = () => {
         Join channel to understand the school life of your children.
       </p>
       <ul>
-        {allChats.map((chat)=>(
+        {allChats.map((chat) => (
           <li key={chat.id}>{chat.name}</li>
         ))}
       </ul>
-      
+
       {/* Flexbox container for horizontal alignment */}
       <div className="flex space-x-6">
         {/* Card 1 */}
@@ -93,9 +95,10 @@ const Chat = () => {
       <div className="mt-12">
         <h2 className="text-3xl font-bold mb-4">Your children's roadmap</h2>
         <p className="text-lg mb-6">
-          Join channel to understand what to expect in the transition to their next phase of journey.
+          Join channel to understand what to expect in the transition to their
+          next phase of journey.
         </p>
-        
+
         {/* Flexbox container for horizontal alignment */}
         <div className="flex space-x-6">
           {/* Card 4 */}
