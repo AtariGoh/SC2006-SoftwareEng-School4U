@@ -5,23 +5,34 @@ import axios from "axios";
 
 const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   const navigate = useNavigate();
+  const [showExpanded, setShowExpanded] = useState(false);
+  const [ccas, setCCAs] = useState([]);
+  const [distProgs, setDistProg] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Add fav school to database linked to user
-  const favSchool = async(data)=>{
+  // Fetch school data based on the school name
+  const fetchSchoolData = async () => {
+    setLoading(true); // Start loading
+
     try {
-      const response = await fetch(`http://localhost:5000/api/addToFav`,{
-        method: 'POST',
-        headers: {
-          'Content-Type':'application/json',
-        },
-        credentials: 'include',
-        body:JSON.stringify({data})
+      const queryParams = new URLSearchParams({
+        query: name, // Assuming 'name' will be used to filter
       });
-      if (response.ok){
-        console.log("Success YAYYYYY");
-      }
-      else{
-        console.log("oh no :((((9")
+
+      // Fetch data from the server with the query parameter
+      const response = await axios.get(
+        `http://localhost:5000/api/schools?${queryParams.toString()}`
+      );
+
+      if (response.status === 200) {
+        // Destructure and set the data from the response
+        const { ccas, distProgs, subjects } = response.data;
+        setCCAs(ccas || []);
+        setDistProg(distProgs || []);
+        setSubjects(subjects || []);
+      } else {
+        console.error("Failed to fetch school details.");
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -40,10 +51,8 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
       </div>
 
       <div className="space-x-2">
-        <button 
-          onClick={(e) => {
-            e.stopPropagation(); // Prevent card click from triggering
-            fetchSchoolData()}} // Fetch school details on button click
+        <button
+          onClick={() => fetchSchoolData()} // Fetch school details on button click
           className="bg-blue text-white px-4 py-2 rounded-md"
         >
           See Details
