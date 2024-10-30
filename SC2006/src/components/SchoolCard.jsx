@@ -27,9 +27,9 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
 
       if (response.status === 200) {
         // Destructure and set the data from the response
-        const { ccas, distProgs, subjects } = response.data;
+        const { ccas, moeprog, subjects } = response.data;
         setCCAs(ccas || []);
-        setDistProg(distProgs || []);
+        setDistProg(moeprog || []);
         setSubjects(subjects || []);
       } else {
         console.error("Failed to fetch school details.");

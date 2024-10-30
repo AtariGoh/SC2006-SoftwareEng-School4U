@@ -47,7 +47,7 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
 
         case "Subjects":
             console.log("query sch name", name);
-
+            console.log(subjects)
             let filteredSubjects = [];
             let uniqueSubjectsSet = new Set(); // Create a Set to track unique subjects
 
@@ -78,32 +78,34 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
             
       case "Programmes":
         console.log("programmes", programmes);
-
+        
         let filteredProgrammes = [];
+        let uniqueProgrammes = new Set();
 
         // For loop to filter subjects
         for (let i = 0; i < programmes.length; i++) {
-            if (programmes[i].school_name === name) {
-                // Add only unique subject descriptions
-                filteredProgrammes.push(programmes[i]);
-            }
-        }
+          if (programmes[i].school_name === name) {
+              // Add only unique subject descriptions
+              if (!uniqueProgrammes.has(programmes[i].catogory)) {
+                  uniqueProgrammes.add(subjects[i].category);
+                  filteredProgrammes.push(subjects[i]);
+              }
+          }
+      }
 
-        console.log("pls work", filteredProgrammes);
+      console.log("pls work", uniqueProgrammes);
 
-
-        return (
-            <ul className="list-disc list-inside">
-                {filteredProgrammes.length > 0 ? (
-                    filteredProgrammes
-                    .map(filteredProgrammes => (
-                        <li key={filteredProgrammes.id}>{filteredProgrammes.prog_name}</li>
-                    ))
-                ) : (
-                    <li>No Programmes available for this school.</li>
-                )}
-            </ul>
-        );
+      return (
+          <ul className="list-disc list-inside">
+              {uniqueProgrammes.size > 0 ? ( // Use size property to check for unique subjects
+                  Array.from(uniqueProgrammes).map((uniqueProgramme, index) => ( // Convert Set to Array for mapping
+                      <li key={index}>{uniqueProgramme}</li> // You can use index or unique identifier if available
+                  ))
+              ) : (
+                  <li>No programmes available for this school.</li>
+              )}
+          </ul>
+      );
 
       case "Locations":
         return <p>{location || "Location information not available."}</p>;
