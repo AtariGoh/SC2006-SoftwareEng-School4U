@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import InfoCard from '../components/InfoCard';
 import NameCard from '../components/NameCard';
@@ -8,6 +9,12 @@ import { useAuth } from '../context/AuthContext.jsx';
 const ComparisonDashboard = () => {
   const navigate = useNavigate();
   //const { loggedIn, setLoggedIn } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const dropdownRef = useRef(null);
+
 
 {/*Dummy Schools*/}
   const [allSchools, setAllSchools] = useState([
@@ -47,19 +54,38 @@ const [selectedSchools, setSelectedSchools] = useState(() => {
 })
 
 useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsDropdownOpen(false);
+    }
+  };
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
+
+
+useEffect(() => {
   localStorage.setItem('selectedSchools', JSON.stringify(selectedSchools));
 }, [selectedSchools]);
 
 {/*Add and remove schools */}
 const handleRemoveSchool = (schoolName) => {
-  setSelectedSchools(prevSchools => prevSchools.filter(school => school.name !== schoolName));
+  setSelectedSchools((prevSchools) =>
+    prevSchools.filter((school) => school.name !== schoolName)
+  );
 };
 
-const handleAddSchool = () => {
-  const notSelectedSchools = allSchools.filter(school => !selectedSchools.includes(school));
-  selectedSchools.length < 3 ? setSelectedSchools([...selectedSchools, notSelectedSchools[0]]) : null;
+const handleAddSchool = (school) => {
+  if (
+    selectedSchools.length < 3 &&
+    !selectedSchools.some((s) => s.name === school.name)
+  ) {
+    setSelectedSchools([...selectedSchools, school]);
+  }
 };
- 
+
 
 {/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> :*/}
 return ( 
@@ -81,8 +107,50 @@ return (
           <p className="text-base mx-9 my-1 float-left "> Displaying {selectedSchools.length} {selectedSchools.length>1 ? "schools" : "school"}.</p> 
         </div>
         <div className="testButton">
-          <button className="border border-black w-10" onClick={handleAddSchool}>+</button>
-          <button className="border border-black w-10" onClick={() => setSelectedSchools(prevSchools => prevSchools.slice(0, -1))}>-</button>        </div>
+        <div className="relative">
+<button
+  onClick={toggleDropdown}
+  className="rounded-lg border-black border-2 mx-5 px-3 hover:opacity-50 mt-4 bg-[#FAEDCE]"
+>
+  View your favourited schools
+</button>
+
+  {isDropdownOpen && (
+    <div
+      ref={dropdownRef}
+      className="absolute bg-white border mt-2 rounded shadow-lg max-h-60 overflow-y-auto"
+      style={{ width: '200px' }} // Adjust width as needed
+    >
+      <ul>
+        {allSchools.map((school) => (
+          <li
+            key={school.name}
+            className="flex justify-between items-center p-2 hover:bg-gray-100"
+          >
+            <span>{school.name}</span>
+            {selectedSchools.some((s) => s.name === school.name) ? (
+              <button
+                onClick={() => handleRemoveSchool(school.name)}
+                className="text-red-500"
+              >
+                -
+              </button>
+            ) : (
+              <button
+                onClick={() => handleAddSchool(school)}
+                className="text-green-500"
+              >
+                +
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+</div>
+
+     </div>
       </div> 
       
       <div className="Container ">

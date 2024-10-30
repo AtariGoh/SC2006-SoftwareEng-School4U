@@ -5,35 +5,23 @@ import axios from "axios";
 
 const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   const navigate = useNavigate();
-  const [showExpanded, setShowExpanded] = useState(false);
-  const [ccas, setCCAs] = useState([]);
-  const [distProgs, setDistProg] = useState([]);
-  const [subjects, setSubjects] = useState([]);
-  const [loading, setLoading] = useState(false);
 
-  // Fetch school data based on the school name
-  const fetchSchoolData = async () => {
-    setLoading(true); // Start loading
-
+  // Add fav school to database linked to user
+  const favSchool = async(data)=>{
     try {
-      const queryParams = new URLSearchParams({
-        query: name, // Assuming 'name' will be used to filter
+      const response = await fetch(`http://localhost:5000/api/addToFav`,{
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json',
+        },
+        credentials: 'include',
+        body:JSON.stringify({data})
       });
-
-      // Fetch data from the server with the query parameter
-      const response = await axios.get(
-        `http://localhost:5000/api/schools?${queryParams.toString()}`
-      );
-
-      if (response.status === 200) {
-        // Destructure and set the data from the response
-        const { ccas, subjects, distProgs } = response.data;
-        setCCAs(ccas || []);
-        setSubjects(subjects || []);
-        setDistProg(distProgs || []);
-        
-      } else {
-        console.error("Failed to fetch school details.");
+      if (response.ok){
+        console.log("Success YAYYYYY");
+      }
+      else{
+        console.log("oh no :((((9")
       }
     } catch (error) {
       console.error("Error fetching data:", error);
