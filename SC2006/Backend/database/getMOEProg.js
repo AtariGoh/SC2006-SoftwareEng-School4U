@@ -9,14 +9,16 @@ async function getMOEProgramsData(queryParams) {
     try {
       const queryString = JSON.stringify({ school_name: queryParams });
       const response = await axios.get(`${url}&q=${queryString}`);
-      const moeprogs = response.data.result.records;
   
-      return moeprogs.map ((moeprog, index) => ({
-        id: index + 1,
-        school_name: moeprog.school_name,
-        category: moeprog.moe_programme_desc,
-      }));
-
+      const moeprogs = response.data.result.records || []; // Default to an empty array if records are undefined
+  
+      return moeprogs.length > 0
+        ? moeprogs.map((moeprog, index) => ({
+            id: index + 1,
+            school_name: moeprog.school_name,
+            category: moeprog.moe_programme_desc,
+          }))
+        : []; // Return an empty array if moeprogs has no records
       
     } catch (error) {
       console.error("Error fetching data:", error);
