@@ -118,10 +118,10 @@ app.get('/api/schools', async (req, res) => {
         .from('fav_schools')
         .insert([{ school_name, user_id }]);
   
-      return res.status(200).json({message:"Book added to bookshelf"})
+      return res.status(200).json({message:"School added"})
     } catch (error) {
       console.error("Supabase Error:", error);
-      res.status(500).json({ error: "An error occurred while adding book" });
+      res.status(500).json({ error: "An error occurred while adding school" });
     }
   })
 

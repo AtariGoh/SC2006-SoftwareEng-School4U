@@ -42,6 +42,29 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
     }
   };
 
+  const handleAddSchool = async (schData) => {
+    const schoolData = { data: schData }; 
+    try {
+      const response = await fetch(`http://localhost:5000/api/addToFav`,{
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json',
+        },
+        credentials: 'include',
+       
+        body:JSON.stringify(schoolData)
+      });
+      if (response.ok){
+        console.log("Success YAYYYYY");
+      }
+      else{
+        console.log("oh no :((((9")
+      }
+    } catch (error) {
+      console.log("Runtime error :( ")
+    }
+  }
+
   return (
     <div className="p-4 bg-[#FAEDCE] border border-black shadow-md rounded-md flex justify-between items-center cursor-pointer hover:shadow-lg transition-shadow duration-300">
       <div>
@@ -59,10 +82,7 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
         </button>
         <button
           onClick={(e) => {
-            e.stopPropagation(); // Prevent card click from triggering
-            navigate("/school-dashboard", {
-              state: { name, postal_code, location },
-            });
+            handleAddSchool(name);
           }}
           className="bg-[#EF5A6F] text-white px-4 py-2 rounded-md"
         >
