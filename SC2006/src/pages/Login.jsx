@@ -3,8 +3,11 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-  const [loginData, setLoginData] = useState({ username: "", password: "" });
-  const { setLoggedIn } = useAuth(); // Use setLoggedIn from AuthContext
+
+  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const { loggedIn, setLoggedIn } = useAuth()
+  
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;

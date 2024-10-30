@@ -12,22 +12,17 @@ import AftSecChat from "./pages/AftSecChat";
 import SearchSchools from "./pages/SearchSchools";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
-import { useAuth } from "./context/AuthContext"; // Import AuthContext
+import { useAuth } from './context/AuthContext.jsx';
 
 const App = () => {
-  const { loggedIn, logout, login } = useAuth(); // Use AuthContext's values
-  const navigate = useNavigate();
+  const { loggedIn, setLoggedIn } = useAuth()
 
-  // Redirect to dashboard if user logs in
-  useEffect(() => {
-    if (loggedIn) {
-      navigate("/dashboard"); // Redirect if logged in
-    }
-  }, [loggedIn, navigate]);
+  const handleLogout = async () => {
+    await fetch(`$http://localhost:5000/api/logout`, { method: 'POST', credentials: 'include' });
+    setLoggedIn(false);
+    window.location.href = '/'; // Optional: Redirect to homepage on logout
 
-  const handleLogout = () => {
-    logout(); // Use logout from AuthContext
-    navigate("/"); // Redirect to homepage
+
   };
 
   return (
@@ -67,13 +62,14 @@ const App = () => {
             </li>
             <li className="flex-grow text-center">
               {loggedIn ? (
-                <button
-                  onClick={handleLogout}
-                  className="hover:underline text-red-400"
-                >
+
+                // Render Logout button if logged in
+                <button onClick={handleLogout} className="hover:underline">
                   Logout
                 </button>
               ) : (
+                // Render Login / Register link if not logged in
+
                 <Link to="/loginAndRegister/login" className="hover:underline">
                   Login / Register
                 </Link>
