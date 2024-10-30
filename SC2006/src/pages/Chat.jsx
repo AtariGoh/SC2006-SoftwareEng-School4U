@@ -3,12 +3,70 @@ import ButtonCardForChat from "../components/ButtonCardForChat"; // Reusable car
 import { useState } from "react";
 import psgImage from "../assets/psg-image.png";
 import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
-import aftsec from "../assets/after-secondary.png";
+
+import aftsec from "../assets/after-secondary.png"
+import { useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Chat = () => {
-  const [allChats] = useState([]);
 
-  return (
+  const [isVerified, setIsVerified] = useState(false); // New state for authentication
+  const[allChats, setAllChats]=useState([]);
+  const location = useLocation(); //to link compare dashboard 
+  //const { loggedIn, setLoggedIn } = useAuth();
+
+  useEffect(() => {
+
+    /*
+      // to link the comparison dashboard
+    useEffect(() => {
+      const searchParams = new URLSearchParams(location.search);
+      const schoolIdFromUrl = searchParams.get('school_id');
+      
+      if (schoolIdFromUrl) {
+        setSelectedSchool(Number(schoolIdFromUrl));
+      }
+    }, [location.search]);
+    
+    const fetchChats = async () => {
+      try {
+        const response = await fetch('/api/chat');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        setAllChats(data);
+      } catch (error) {
+        console.error('Error fetching chat rooms:', error);
+      }
+    };
+  
+    
+    const checkAuthStatus = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        const response = await fetch('/api/chat/verify-access', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`, // Send token with the request
+          },
+        });
+        const data = await response.json();
+        if (data.verified) {
+          setIsVerified(true); // User is verified as a parent
+        }
+      }
+    };
+    */
+    
+    //fetchChats();
+    // checkAuthStatus(); // Check the token when the page loads
+  }, []);
+
+
+
+  {/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> : */}
+  return ( 
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold mb-4">Parents Chat Forum</h2>
       <p className="text-lg mb-6">

@@ -5,7 +5,6 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 
 
-
 // Route to fetch all chat messages
 router.get('/apchat/:school_id', async (req, res) => {
   const{school_id}=req.params;
@@ -40,7 +39,8 @@ router.post('/apchat/messages', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('ApChat')
-      .insert([{message, school_id }])   //add user
+
+      .insert([{message, school_id }])   //add user 
       .select("*");
 
 
@@ -52,7 +52,6 @@ router.post('/apchat/messages', async (req, res) => {
     //create message object
     const result = data[0].message;
     res.status(201).json(result);
-
 
   } catch (error) {
     console.log("error in apchat", error);

@@ -1,10 +1,15 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import InfoCard from "../components/InfoCard";
-import NameCard from "../components/NameCard";
+
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import InfoCard from '../components/InfoCard';
+import NameCard from '../components/NameCard';
+import { useAuth } from '../context/AuthContext.jsx';
+
+
 
 const ComparisonDashboard = () => {
   const navigate = useNavigate();
+  //const { loggedIn, setLoggedIn } = useAuth();
 
   const [allSchools, setAllSchools] = useState([
     {
@@ -72,19 +77,20 @@ const ComparisonDashboard = () => {
     );
   };
 
-  const handleAddSchool = () => {
-    const notSelectedSchools = allSchools.filter(
-      (school) => !selectedSchools.includes(school)
-    );
-    selectedSchools.length < 3
-      ? setSelectedSchools([...selectedSchools, notSelectedSchools[0]])
-      : null;
-  };
 
-  return (
-    <div className="min-h-screen pt-14 bg-gray-100 p-0">
-      {/* Navigation Bar */}
-      <div className="flex justify-between p-2 bg-[#EF5A6F] shadow-md">
+const handleAddSchool = () => {
+  const notSelectedSchools = allSchools.filter(school => !selectedSchools.includes(school));
+  selectedSchools.length < 3 ? setSelectedSchools([...selectedSchools, notSelectedSchools[0]]) : null;
+};
+ 
+
+{/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> :*/}
+return ( 
+    <div className="-mt-3 min-h-screen bg-gray-100 p-0">
+      {/* navigation bar*/}
+      <div className="flex justify-between p-2 left-0 bg-[#EF5A6F] shadow-md z-40">
+=======
+
         <div className="contentLeft">
           <div className="p-2 nameBar flex flex-grow border-r bg-[#FAEDCE] h-10 ml-7 mt-3 rounded-xl justify-between">
             {selectedSchools.length > 0 ? null : (

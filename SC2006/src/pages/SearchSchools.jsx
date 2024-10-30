@@ -1,17 +1,27 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import SchoolCard from "../components/SchoolCard"; // Import SchoolCard component
+import SchoolCard from "../components/SchoolCard";
+import axios from 'axios';
 
 const SearchSchools = () => {
   const navigate = useNavigate();
 
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const [ccas, setCCAs] = useState([]);
+  const [distProgs, setdistProg] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [moeprog, setMOEProg] = useState([]);
+
+
+
+  // Pagination and infinite scroll state
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
+
+  // Filter-related state
 
   const [filtersVisible, setFiltersVisible] = useState(false);
   const [level, setLevel] = useState("");
@@ -24,6 +34,11 @@ const SearchSchools = () => {
   const fetchSchools = async (reset = false) => {
     try {
       setLoading(true);
+
+      setError(null);
+  
+      // Build query parameters
+
       const queryParams = new URLSearchParams({
         query,
         level,
@@ -34,29 +49,42 @@ const SearchSchools = () => {
         limit: SCHOOLS_PER_PAGE,
       });
 
-      const response = await fetch(
-        `https://your-api.com/schools?${queryParams.toString()}`
-      );
+  
+      // Fetch data from the server with updated route
+      const response = await axios.get(`http://localhost:5000/api/schools?${queryParams.toString()}`);
+      console.log("Query Parameters:", queryParams.toString());
 
-      if (!response.ok) throw new Error("Failed to fetch schools.");
+      // Ensure response is successful
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch schools.");
+      }
+  
+      // Parse and set school and CCA data from response
+    const { schools, ccas, distProgs, subjects, moeprog } = response.data; // Destructure the data
+    setResults((prevResults) => (reset ? schools : [...prevResults, ...schools]));
+    setCCAs(ccas); 
+    setdistProg(distProgs);
+    setSubjects(subjects);
+    setMOEProg(moeprog);
+    setHasMore(schools.length === SCHOOLS_PER_PAGE);
+  
 
-      const data = await response.json();
-      setResults((prevResults) =>
-        reset ? data.schools || [] : [...prevResults, ...(data.schools || [])]
-      );
-      setHasMore((data.schools || []).length === SCHOOLS_PER_PAGE);
     } catch (error) {
-      console.error(error);
-      setError("Failed to fetch schools.");
+      console.error("Error fetching data:", error);
+      setError("Failed to fetch schools. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
+
+  // Reset results and fetch on initial mount and whenever filters or query change
   useEffect(() => {
     setPage(1);
-    const timeoutId = setTimeout(() => fetchSchools(true), 0);
-    return () => clearTimeout(timeoutId);
+    fetchSchools(true);
+
   }, [query, level, programme, location, sortBy]);
 
   useEffect(() => {
@@ -66,12 +94,16 @@ const SearchSchools = () => {
   const lastSchoolRef = useCallback(
     (node) => {
       if (loading) return;
+
+
       if (observer.current) observer.current.disconnect();
+
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           setPage((prevPage) => prevPage + 1);
         }
       });
+
       if (node) observer.current.observe(node);
     },
     [loading, hasMore]
@@ -83,11 +115,16 @@ const SearchSchools = () => {
     setProgramme("");
     setLocation("");
     setSortBy("name-asc");
+
+    fetchSchools(true); 
   };
 
   return (
-    <div className="flex flex-col min-h-screen pt-16">
-      <div className="flex-grow p-3">
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-grow p-8">
+        {/* Secondary Navbar - Filters */}
+
+
         <div className="flex items-center space-x-4 bg-[#EF5A6F] p-4 rounded-md mb-4 text-black">
           <input
             type="text"
@@ -137,21 +174,14 @@ const SearchSchools = () => {
             <div className="flex space-x-4">
               <input
                 type="text"
-                placeholder="Level (e.g., Primary, Secondary)"
+                placeholder="Level (Primary, Secondary)"
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
                 className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
               />
               <input
                 type="text"
-                placeholder="Programme"
-                value={programme}
-                onChange={(e) => setProgramme(e.target.value)}
-                className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
-              />
-              <input
-                type="text"
-                placeholder="Location"
+                placeholder="Location (North, South, East, West)"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
@@ -170,12 +200,12 @@ const SearchSchools = () => {
               key={school.id}
             >
               <SchoolCard
-                name={school.name}
-                programme={school.programme}
-                location={school.location}
+                name={school.school_name}
+                programme={school.postal_code}
+                location={school.address}
                 onClick={() => !loading && navigate(`/school/${school.id}`)}
-                onCompare={() => console.log(`Added ${school.name} to compare`)}
-                onReview={() => console.log(`Reviewing ${school.name}`)}
+                onCompare={() => console.log(`Added ${school.school_name} to compare`)}
+                onReview={() => console.log(`Reviewing ${school.school_name}`)}
               />
             </div>
           ))}
