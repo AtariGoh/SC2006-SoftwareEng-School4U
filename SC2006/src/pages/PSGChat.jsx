@@ -125,7 +125,7 @@ const PSGChat = () => {
           value={schoolSearch}
           onChange={(e) => setSchoolSearch(e.target.value)} // Update search term
         />
-        <div className="overflow-auto h-64">
+        <div className="flex-grow overflow-auto">
           {Array.isArray(schoolList) && schoolList.map((school) => ( // Ensure schoolList is an array
             <button
               name={school.school_name}
