@@ -106,7 +106,7 @@ const AftSecChat = () => {
           value={schoolSearch}
           onChange={(e) => setSchoolSearch(e.target.value)}
         />
-        <div className="overflow-auto h-64">
+        <div className="flex-grow overflow-auto">
           {filteredSchools.map((school) => (
             <button
               key={school.school_id}
