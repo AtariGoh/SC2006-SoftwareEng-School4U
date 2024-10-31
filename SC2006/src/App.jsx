@@ -10,12 +10,15 @@ import AftPriChat from "./pages/AftPriChat";
 import AftSecChat from "./pages/AftSecChat";
 import AuthForChat from "./pages/AuthForChat";
 import SearchSchools from "./pages/SearchSchools";
+import DetailedCard from "./components/DetailedCard.jsx";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
 import { useAuth } from './context/AuthContext.jsx';
+import { LoadScript } from "@react-google-maps/api";
 
 const App = () => {
   const { loggedIn, setLoggedIn } = useAuth()
+
 
   const handleLogout = async () => {
     await fetch(`$http://localhost:5000/api/logout`, { method: 'POST', credentials: 'include' });
@@ -77,6 +80,7 @@ const App = () => {
       {/* Page Content */}
       <div className="pt-16"></div> {/* Adjusted padding to avoid overlap */}
       <div className="pt-20">
+      <LoadScript googleMapsApiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/loginAndRegister" element={<LoginRegister />}>
@@ -86,6 +90,7 @@ const App = () => {
           {/* Correct Route */}
           <Route path="/dashboard" element={<ComparisonDashboard />} />
           <Route path="/search" element={<SearchSchools />} />
+          <Route path="/school/:id" element={<DetailedCard />} />
           <Route path = "/chat" element={<Chat />} />
           <Route path = "/psgchat" element ={<PSGChat/>}/>
           <Route path = "/aftprichat" element ={<AftPriChat/>}/>
@@ -93,6 +98,7 @@ const App = () => {
 
           <Route path="/review" element={<Review />} />
         </Routes>
+        </LoadScript>
       </div>
       {/* Footer */}
       <footer className="bg-[#536493] text-white py-6 text-center">

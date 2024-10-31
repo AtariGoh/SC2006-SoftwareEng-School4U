@@ -1,5 +1,6 @@
 // backend/database/getSchools.js
 const axios = require('axios');
+const getCoordsForAddress = require('../database/location');
 
 const datasetId = {
   "genInfo": "d_688b934f82c1059ed0a6993d2a829089",  // General Information of Schools
@@ -27,7 +28,7 @@ async function getSchoolData(queryParams) {
       console.log(`${baseUrl}&q=${queryString}`)
       const schools = response.data.result.records;
       console.log(queryParams.sort)
-      
+
       if (queryParams.sort == "name-desc"){
         return schools.reverse().map((school, index) => ({
           id: index + 1,
@@ -47,12 +48,18 @@ async function getSchoolData(queryParams) {
         }));
       }
 
-
+      let coordinates;
+      try{
+        coordinates = await getCoordsForAddress(school.address);
+      }catch(error){
+      return next(error);
+    }
+      
       
     } catch (error) {
       console.error("Error fetching data:", error);
       throw new Error("Failed to fetch school data.");
-    }
+    } 
   }
   
 

@@ -1,8 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { GoogleMap, InfoWindow,Marker } from "@react-google-maps/api"; 
+import axios from "axios";
+import marker from "../assets/marker.png";
+
 
 const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], location, onClose, loading }) => {
   const [activeTab, setActiveTab] = useState("CCAs");
-
+  const [coordinates, setCoordinates] = useState(null);
+  const [showInfoWindow, setShowInfoWindow] = useState(false);
+  
   /*
   console.log("Name:", name);
   console.log("CCAs:", ccas);
@@ -11,6 +17,24 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
   console.log("Location:", location);
   console.log("Loading:", loading);
 */
+
+  // Fetch coordinates based on the address
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      try {
+        const response = await axios.post("http://localhost:5000/api/get-coordinates", {
+          address: location,
+        });
+        setCoordinates(response.data);
+
+        console.log("Location coordinates:", response.data);
+      } catch (error) {
+        console.error("Error fetching coordinates:", error);
+      }
+    };
+
+    if (location) fetchCoordinates();
+  }, [location]);
 
   const renderContent = () => {
     if (loading) return <p>Loading data...</p>; // Show loading message if loading
@@ -108,7 +132,36 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
       );
 
       case "Locations":
-        return <p>{location || "Location information not available."}</p>;
+        if (!coordinates) return <p>Location information not available.</p>;
+        
+        return (
+            <GoogleMap
+              mapContainerStyle={{ width: "100%", height: "500px" }}
+              center={coordinates}
+              zoom={12}
+              onClick={() => setShowInfoWindow(false)} // Close InfoWindow on map click
+              >
+                {coordinates && (
+                  <>
+                    <Marker
+                      position={coordinates}
+                      icon={{url:marker, size: {width: 40, height:40}}}
+                      onClick={() => setShowInfoWindow(true)}
+                    />
+                    {showInfoWindow && (
+                      <InfoWindow position={coordinates}>
+                        <div>
+                          {/* Add your desired content for the InfoWindow here */}
+                          <p>This is a red marker with an InfoWindow!</p>
+                        </div>
+                      </InfoWindow>
+                    )}
+                  </>
+                )}
+              </GoogleMap>
+          
+          );
+
       default:
         return null;
     }

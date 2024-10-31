@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import DetailedCard from "./DetailedCard";
 import { useState } from "react";
 import axios from "axios";
-
+ 
 const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   const navigate = useNavigate();
   const [showExpanded, setShowExpanded] = useState(false);
@@ -103,15 +103,15 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
 
       {/* Render DetailedCard only if showExpanded is true */}
       {showExpanded && (
-        <DetailedCard
-          name={name}
-          ccas={ccas}
-          programmes={distProgs}
-          subjects={subjects}
-          location={location}
-          onClose={() => setShowExpanded(false)}
-          loading={loading} // Pass loading to show loader if needed
-        />
+          <DetailedCard
+            name={name}
+            ccas={ccas}
+            programmes={distProgs}
+            subjects={subjects}
+            location={location}
+            onClose={() => setShowExpanded(false)}
+            loading={loading} // Pass loading to show loader if needed
+          />
       )}
     </div>
   );
