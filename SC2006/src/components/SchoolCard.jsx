@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import DetailedCard from "./DetailedCard";
 import { useState } from "react";
 import axios from "axios";
- 
+
 const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   const navigate = useNavigate();
   const [showExpanded, setShowExpanded] = useState(false);
@@ -13,20 +13,13 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
 
   // Fetch school data based on the school name
   const fetchSchoolData = async () => {
-    setLoading(true); // Start loading
-
+    setLoading(true);
     try {
-      const queryParams = new URLSearchParams({
-        query: name, // Assuming 'name' will be used to filter
-      });
-
-      // Fetch data from the server with the query parameter
+      const queryParams = new URLSearchParams({ query: name });
       const response = await axios.get(
         `http://localhost:5000/api/schools?${queryParams.toString()}`
       );
-
       if (response.status === 200) {
-        // Destructure and set the data from the response
         const { ccas, moeprog, subjects } = response.data;
         setCCAs(ccas || []);
         setDistProg(moeprog || []);
@@ -37,33 +30,24 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-      setLoading(false); // Stop loading
-      setShowExpanded(true); // Show DetailedCard after data load
+      setLoading(false);
+      setShowExpanded(true);
     }
   };
 
   const handleAddSchool = async (schData) => {
-    const schoolData = { data: schData }; 
     try {
-      const response = await fetch(`http://localhost:5000/api/addToFav`,{
-        method: 'POST',
-        headers: {
-          'Content-Type':'application/json',
-        },
-        credentials: 'include',
-       
-        body:JSON.stringify(schoolData)
+      const response = await fetch(`http://localhost:5000/api/addToFav`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ data: schData }),
       });
-      if (response.ok){
-        console.log("Success YAYYYYY");
-      }
-      else{
-        console.log("oh no :((((9")
-      }
+      if (!response.ok) console.log("Failed to add school.");
     } catch (error) {
-      console.log("Runtime error :( ")
+      console.error("Runtime error:", error);
     }
-  }
+  };
 
   return (
     <div className="p-4 bg-[#FAEDCE] border border-black shadow-md rounded-md flex justify-between items-center cursor-pointer hover:shadow-lg transition-shadow duration-300">
@@ -74,44 +58,44 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
       </div>
 
       <div className="space-x-2">
+        {/* See Details Button */}
         <button
-          onClick={() => fetchSchoolData()} // Fetch school details on button click
-          className="bg-blue text-white px-4 py-2 rounded-md"
+          onClick={fetchSchoolData}
+          className="bg-[#536493] text-white px-4 py-2 rounded-md transition transform hover:bg-blue-600 hover:scale-105 active:scale-95"
         >
           See Details
         </button>
+
+        {/* Add to Compare Button */}
         <button
-          onClick={(e) => {
-            handleAddSchool(name);
-          }}
-          className="bg-[#EF5A6F] text-white px-4 py-2 rounded-md"
+          onClick={() => handleAddSchool(name)}
+          className="bg-[#EF5A6F] text-white px-4 py-2 rounded-md transition transform hover:bg-red-600 hover:scale-105 active:scale-95"
         >
           Add to Compare
         </button>
+
+        {/* Review Button (Green) */}
         <button
           onClick={(e) => {
-            e.stopPropagation(); // Prevent card click from triggering
-            navigate("/school-review", {
-              state: { name },
-            });
+            e.stopPropagation();
+            navigate("/review-schools", { state: { name } });
           }}
-          className="bg-brown text-white px-4 py-2 rounded-md"
+          className="bg-green-500 text-white px-4 py-2 rounded-md transition transform hover:bg-green-600 hover:scale-105 active:scale-95"
         >
           Review
         </button>
       </div>
 
-      {/* Render DetailedCard only if showExpanded is true */}
       {showExpanded && (
-          <DetailedCard
-            name={name}
-            ccas={ccas}
-            programmes={distProgs}
-            subjects={subjects}
-            location={location}
-            onClose={() => setShowExpanded(false)}
-            loading={loading} // Pass loading to show loader if needed
-          />
+        <DetailedCard
+          name={name}
+          ccas={ccas}
+          programmes={distProgs}
+          subjects={subjects}
+          location={location}
+          onClose={() => setShowExpanded(false)}
+          loading={loading}
+        />
       )}
     </div>
   );
