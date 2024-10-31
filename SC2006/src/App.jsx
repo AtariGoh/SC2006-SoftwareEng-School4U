@@ -1,7 +1,7 @@
 import { Routes, Route, Link } from "react-router-dom";
 import HomePage from "./pages/Homepage";
 import LoginRegister from "./pages/LoginRegister"; // Handles both Login & Register
-import Login from './pages/Login'
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ComparisonDashboard from "./pages/ComparisonDashboard";
 import Chat from "./pages/Chat";
@@ -11,19 +11,22 @@ import AftSecChat from "./pages/AftSecChat";
 import AuthForChat from "./pages/AuthForChat";
 import SearchSchools from "./pages/SearchSchools";
 import DetailedCard from "./components/DetailedCard.jsx";
+import SchoolReview from "./pages/SchoolReview.jsx";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
-import { useAuth } from './context/AuthContext.jsx';
+import { useAuth } from "./context/AuthContext.jsx";
 import { APIProvider } from "@vis.gl/react-google-maps";
 
 const App = () => {
-  const { loggedIn, setLoggedIn } = useAuth()
-
+  const { user, loggedIn, setLoggedIn } = useAuth();
 
   const handleLogout = async () => {
-    await fetch(`$http://localhost:5000/api/logout`, { method: 'POST', credentials: 'include' });
+    await fetch(`http://localhost:5000/api/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
     setLoggedIn(false);
-    window.location.href = '/'; // Optional: Redirect to homepage on logout
+    window.location.href = "/";
   };
 
   return (
@@ -57,18 +60,16 @@ const App = () => {
               </Link>
             </li>
             <li className="flex-grow text-center">
-            <Link to="/chat" className="hover:underline">
+              <Link to="/chat" className="hover:underline">
                 Chat Forum
               </Link>
             </li>
             <li className="flex-grow text-center">
               {loggedIn ? (
-                // Render Logout button if logged in
                 <button onClick={handleLogout} className="hover:underline">
                   Logout
                 </button>
               ) : (
-                // Render Login / Register link if not logged in
                 <Link to="/loginAndRegister/login" className="hover:underline">
                   Login / Register
                 </Link>
@@ -80,23 +81,23 @@ const App = () => {
       {/* Page Content */}
       <div className="pt-16"></div> {/* Adjusted padding to avoid overlap */}
       <div className="pt-20">
-      <APIProvider googleMapsApiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/loginAndRegister" element={<LoginRegister />}>
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-          </Route>
-          {/* Correct Route */}
-          <Route path="/dashboard" element={<ComparisonDashboard />} />
-          <Route path="/search" element={<SearchSchools />} />
-          <Route path="/school/:id" element={<DetailedCard />} />
-          <Route path = "/chat" element={<Chat />} />
-          <Route path = "/psgchat" element ={<PSGChat/>}/>
-          <Route path = "/aftprichat" element ={<AftPriChat/>}/>
-          <Route path = "/aftsecchat" element ={<AftSecChat/>}/>
-          <Route path="/review" element={<Review />} />
-        </Routes>
+        <APIProvider googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/loginAndRegister" element={<LoginRegister />}>
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+            </Route>
+            <Route path="/dashboard" element={<ComparisonDashboard />} />
+            <Route path="/search" element={<SearchSchools />} />
+            <Route path="/school/:id" element={<DetailedCard />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/psgchat" element={<PSGChat />} />
+            <Route path="/aftprichat" element={<AftPriChat />} />
+            <Route path="/aftsecchat" element={<AftSecChat />} />
+            <Route path="/review-schools" element={<SchoolReview />} />
+            <Route path="/review" element={<Review />} />
+          </Routes>
         </APIProvider>
       </div>
       {/* Footer */}
