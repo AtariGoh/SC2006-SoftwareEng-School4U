@@ -14,7 +14,7 @@ import DetailedCard from "./components/DetailedCard.jsx";
 import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
 import { useAuth } from './context/AuthContext.jsx';
-import { LoadScript } from "@react-google-maps/api";
+import { APIProvider } from "@vis.gl/react-google-maps";
 
 const App = () => {
   const { loggedIn, setLoggedIn } = useAuth()
@@ -80,7 +80,7 @@ const App = () => {
       {/* Page Content */}
       <div className="pt-16"></div> {/* Adjusted padding to avoid overlap */}
       <div className="pt-20">
-      <LoadScript googleMapsApiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
+      <APIProvider googleMapsApiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/loginAndRegister" element={<LoginRegister />}>
@@ -95,10 +95,9 @@ const App = () => {
           <Route path = "/psgchat" element ={<PSGChat/>}/>
           <Route path = "/aftprichat" element ={<AftPriChat/>}/>
           <Route path = "/aftsecchat" element ={<AftSecChat/>}/>
-
           <Route path="/review" element={<Review />} />
         </Routes>
-        </LoadScript>
+        </APIProvider>
       </div>
       {/* Footer */}
       <footer className="bg-[#536493] text-white py-6 text-center">

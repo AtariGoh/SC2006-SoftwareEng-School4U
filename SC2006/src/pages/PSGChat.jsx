@@ -1,30 +1,64 @@
 import React, { useState, useEffect } from "react";
 import { FaLink, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import psgImage from "../assets/psg-image.png";
+import axios from 'axios';
 
 const PSGChat = () => {
-  const schools = [
-    { school_id: 1, name: 'Greenwood High School' },
-    { school_id: 2, name: 'Sunnydale Academy' },
-    { school_id: 3, name: 'Riverside School' },
-    { school_id: 4, name: 'Maple Leaf International School' },
-    { school_id: 5, name: 'Crescent Valley High' },
-    { school_id: 6, name: 'Oakwood Preparatory School' },
-    { school_id: 7, name: 'Hilltop Primary School' },
-    { school_id: 8, name: 'Pine Crest School' },
-    { school_id: 9, name: 'Lakeside Secondary School' },
-    { school_id: 10, name: 'Silver Oaks School' },
-  ];
-
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [schoolSearch, setSchoolSearch] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [schoolSearch, setSchoolSearch] = useState(""); // Combined search
+  const [selectedSchool, setSelectedSchool] = useState();
+  const [schoolList, setSchoolList] = useState([]); // Ensure it starts as an array
+  const [error, setError] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
-  const [selectedSchool, setSelectedSchool] = useState(schools[0].school_id);
+  const [searchResults, setSearchResults] = useState([]);
 
+  // Fetch school data based on the search query
+  const fetchSchoolData = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.get(`http://localhost:5000/api/schools?query=${schoolSearch}`);
+      console.log("school searched:", schoolSearch);
+
+      if (response.status === 200) {
+        console.log("Fetched schools:", response.data);
+        setSchoolList(Array.isArray(response.data) ? response.data : []);
+
+        console.log(response.data);
+
+      } else {
+        throw new Error("Failed to fetch schools.");
+      }
+    } catch (error) {
+      console.error("Error fetching schools:", error);
+      setError("Could not fetch schools.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSchoolData(); // Fetch on schoolSearch change
+  }, [schoolSearch]);
+
+  // Update search results based on current search term
+  useEffect(() => {
+    if (searchTerm) {
+      const results = messages
+        .map((msg, index) => ({ ...msg, index }))
+        .filter((msg) => msg.message && msg.message.toLowerCase().includes(searchTerm.toLowerCase()));
+      setSearchResults(results);
+      setCurrentSearchIndex(0);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchTerm, messages]);
+
+  // Fetch messages for the selected school
   useEffect(() => {
     if (selectedSchool) {
       const fetchMessages = async () => {
@@ -38,28 +72,16 @@ const PSGChat = () => {
           setLoading(false);
         }
       };
-      
-      // Initial fetch and setting interval for updates
+
       fetchMessages();
       const intervalId = setInterval(fetchMessages, 2000);
       return () => clearInterval(intervalId);
     }
   }, [selectedSchool]);
 
-  useEffect(() => {
-    if (searchTerm) {
-      const results = messages
-        .map((msg, index) => ({ ...msg, index }))
-        .filter((msg) => msg.message && msg.message.toLowerCase().includes(searchTerm.toLowerCase()));
-      setSearchResults(results);
-      setCurrentSearchIndex(0);
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchTerm, messages]);
-
+  // Handle sending a new message
   const handleSendMessage = async () => {
-    if (newMessage.trim() !== "") {
+    if (newMessage.trim()) {
       try {
         const response = await fetch("http://localhost:5000/api/psgchat/messages", {
           method: "POST",
@@ -69,7 +91,7 @@ const PSGChat = () => {
 
         if (response.ok) {
           const result = await response.json();
-          setMessages([...messages, result]);
+          setMessages((prevMessages) => [...prevMessages, result]);
           setNewMessage("");
         }
       } catch (error) {
@@ -78,21 +100,18 @@ const PSGChat = () => {
     }
   };
 
+  // Handle search navigation
   const handleSearchNavigation = (direction) => {
     let newIndex = currentSearchIndex;
     if (direction === "up" && currentSearchIndex > 0) newIndex--;
     else if (direction === "down" && currentSearchIndex < searchResults.length - 1) newIndex++;
-    
+
     if (newIndex !== currentSearchIndex) {
       setCurrentSearchIndex(newIndex);
       document.getElementById(`message-${searchResults[newIndex].index}`)
         .scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
-
-  const filteredSchools = schools.filter((school) =>
-    school.name.toLowerCase().includes(schoolSearch.toLowerCase())
-  );
 
   return (
     <div className="flex h-screen">
@@ -104,11 +123,12 @@ const PSGChat = () => {
           placeholder="Search your school"
           className="w-full p-2 mb-4 bg-yellow border border-black rounded-full"
           value={schoolSearch}
-          onChange={(e) => setSchoolSearch(e.target.value)}
+          onChange={(e) => setSchoolSearch(e.target.value)} // Update search term
         />
         <div className="overflow-auto h-64">
-          {filteredSchools.map((school) => (
+          {Array.isArray(schoolList) && schoolList.map((school) => ( // Ensure schoolList is an array
             <button
+              name={school.school_name}
               key={school.school_id}
               onClick={() => setSelectedSchool(school.school_id)}
               className={`block w-full text-left p-2 rounded-lg mb-2 ${

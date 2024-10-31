@@ -1,7 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 
-const API_KEY = 'AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM';
+const API_KEY = process.env.GOOGLE_API_KEY;
 
 async function getCoordsForAddress(address) {
     /*init map to singapore if no location found
