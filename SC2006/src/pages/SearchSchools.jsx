@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import SchoolCard from "../components/SchoolCard";
-import axios from 'axios';
+import axios from "axios";
 
 const SearchSchools = () => {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const SearchSchools = () => {
     try {
       setLoading(true);
       setError(null);
-  
+
       // Build query parameters
       const queryParams = new URLSearchParams({
         query,
@@ -45,25 +45,28 @@ const SearchSchools = () => {
         page,
         limit: SCHOOLS_PER_PAGE,
       });
-  
+
       // Fetch data from the server with updated route
-      const response = await axios.get(`http://localhost:5000/api/schools?${queryParams.toString()}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/schools?${queryParams.toString()}`
+      );
       console.log("Query Parameters:", queryParams.toString());
 
       // Ensure response is successful
       if (response.status !== 200) {
         throw new Error("Failed to fetch schools.");
       }
-  
+
       // Parse and set school and CCA data from response
-    const { schools, ccas, distProgs, subjects, moeprog } = response.data; // Destructure the data
-    setResults((prevResults) => (reset ? schools : [...prevResults, ...schools]));
-    setCCAs(ccas); 
-    setdistProg(distProgs);
-    setSubjects(subjects);
-    setMOEProg(moeprog);
-    setHasMore(schools.length === SCHOOLS_PER_PAGE);
-  
+      const { schools, ccas, distProgs, subjects, moeprog } = response.data; // Destructure the data
+      setResults((prevResults) =>
+        reset ? schools : [...prevResults, ...schools]
+      );
+      setCCAs(ccas);
+      setdistProg(distProgs);
+      setSubjects(subjects);
+      setMOEProg(moeprog);
+      setHasMore(schools.length === SCHOOLS_PER_PAGE);
     } catch (error) {
       console.error("Error fetching data:", error);
       setError("Failed to fetch schools. Please try again later.");
@@ -71,8 +74,6 @@ const SearchSchools = () => {
       setLoading(false);
     }
   };
-  
-  
 
   // Reset results and fetch on initial mount and whenever filters or query change
   useEffect(() => {
@@ -109,7 +110,7 @@ const SearchSchools = () => {
     setProgramme("");
     setLocation("");
     setSortBy("name-asc");
-    fetchSchools(true); 
+    fetchSchools(true);
   };
 
   return (
@@ -126,14 +127,14 @@ const SearchSchools = () => {
           />
           <button
             onClick={() => setFiltersVisible(!filtersVisible)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md"
+            className="bg-blue text-white px-4 py-2 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-blue active:scale-95"
           >
             {filtersVisible ? "Hide Filters" : "Show Filters"}
           </button>
           <button
             onClick={() => fetchSchools(true)}
             disabled={loading}
-            className={`bg-green-500 text-white px-4 py-2 rounded-md shadow-md ${
+            className={`bg-green-500 text-white px-4 py-2 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-green-600 active:scale-95 ${
               loading ? "opacity-50" : ""
             }`}
           >
@@ -141,7 +142,7 @@ const SearchSchools = () => {
           </button>
           <button
             onClick={handleClear}
-            className="bg-gray-300 px-4 py-2 rounded-md shadow-md"
+            className="bg-gray-300 px-4 py-2 rounded-md shadow-md transition-transform transform hover:scale-105 hover:bg-gray-400 active:scale-95"
           >
             Clear
           </button>
@@ -199,7 +200,9 @@ const SearchSchools = () => {
                 programme={school.postal_code}
                 location={school.address}
                 onClick={() => !loading && navigate(`/school/${school.id}`)}
-                onCompare={() => console.log(`Added ${school.school_name} to compare`)}
+                onCompare={() =>
+                  console.log(`Added ${school.school_name} to compare`)
+                }
                 onReview={() => console.log(`Reviewing ${school.school_name}`)}
               />
             </div>
