@@ -25,10 +25,10 @@ const PSGChat = () => {
       console.log("school searched:", schoolSearch);
 
       if (response.status === 200) {
-        console.log("Fetched schools:", response.data);
-        setSchoolList(Array.isArray(response.data) ? response.data : []);
+        console.log("Fetched schools:", response.data.schools);
+        setSchoolList(response.data.schools);
 
-        console.log(response.data);
+        console.log("data:",schoolList);
 
       } else {
         throw new Error("Failed to fetch schools.");
@@ -129,13 +129,13 @@ const PSGChat = () => {
           {Array.isArray(schoolList) && schoolList.map((school) => ( // Ensure schoolList is an array
             <button
               name={school.school_name}
-              key={school.school_id}
-              onClick={() => setSelectedSchool(school.school_id)}
+              key={school.id}
+              onClick={() => setSelectedSchool(school.id)}
               className={`block w-full text-left p-2 rounded-lg mb-2 ${
                 selectedSchool === school.school_id ? "bg-blue text-white" : "bg-gray-200"
               }`}
             >
-              {school.name}
+              {school.school_name}
             </button>
           ))}
         </div>
