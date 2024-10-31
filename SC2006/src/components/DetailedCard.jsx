@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { GoogleMap, InfoWindow,Marker } from "@react-google-maps/api"; 
+import { APIProvider, Map, AdvancedMarker,Pin } from "@vis.gl/react-google-maps";
 import axios from "axios";
 import marker from "../assets/marker.png";
 
@@ -135,31 +136,13 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
         if (!coordinates) return <p>Location information not available.</p>;
         
         return (
-            <GoogleMap
-              mapContainerStyle={{ width: "100%", height: "500px" }}
-              center={coordinates}
-              zoom={12}
-              onClick={() => setShowInfoWindow(false)} // Close InfoWindow on map click
-              >
-                {coordinates && (
-                  <>
-                    <Marker
-                      position={coordinates}
-                      icon={{url:marker, size: {width: 40, height:40}}}
-                      onClick={() => setShowInfoWindow(true)}
-                    />
-                    {showInfoWindow && (
-                      <InfoWindow position={coordinates}>
-                        <div>
-                          {/* Add your desired content for the InfoWindow here */}
-                          <p>This is a red marker with an InfoWindow!</p>
-                        </div>
-                      </InfoWindow>
-                    )}
-                  </>
-                )}
-              </GoogleMap>
-          
+            <APIProvider apiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
+              <div className="w-[100%] h-[500px]">
+                <Map zoom={15} center={coordinates} mapId={'DEMO_MAP_ID'}>
+                  <AdvancedMarker position={coordinates}></AdvancedMarker>
+                </Map>
+              </div>
+            </APIProvider>
           );
 
       default:
