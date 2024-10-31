@@ -60,9 +60,8 @@ const Review = () => {
   const Star = ({ filled, onClick }) => (
     <span
       onClick={onClick}
-      className={`cursor-pointer text-3xl transition transform ${
-        filled ? "text-yellow-500 scale-110" : "text-gray-400"
-      } hover:scale-125 hover:text-yellow-300`}
+      style={{ color: filled ? "#F59E0B" : "#D1D5DB" }} // Yellow if filled, Gray otherwise
+      className="cursor-pointer text-3xl transition-transform transform hover:scale-125"
     >
       ★
     </span>
