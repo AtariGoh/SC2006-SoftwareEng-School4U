@@ -60,7 +60,8 @@ const PSGChat = () => {
 
   // Fetch messages for the selected school
   useEffect(() => {
-    if (selectedSchool) {
+    // Only refresh if no search term is active
+    if (selectedSchool && !searchTerm) {
       const fetchMessages = async () => {
         try {
           const response = await fetch(`http://localhost:5000/api/psgchat/${selectedSchool}`);
@@ -72,12 +73,13 @@ const PSGChat = () => {
           setLoading(false);
         }
       };
-
-      fetchMessages();
-      const intervalId = setInterval(fetchMessages, 2000);
-      return () => clearInterval(intervalId);
+  
+      fetchMessages(); // Initial fetch
+      const intervalId = setInterval(fetchMessages, 2000); // Set up interval if no search term
+      return () => clearInterval(intervalId); // Cleanup interval on component unmount or dependency change
     }
-  }, [selectedSchool]);
+  }, [selectedSchool, searchTerm]);
+  
 
   // Handle sending a new message
   const handleSendMessage = async () => {
