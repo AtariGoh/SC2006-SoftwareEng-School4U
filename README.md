@@ -1,7 +1,7 @@
 # SC2006-SoftwareEng-Right School For Your Kid
 - Website aimed to distill the process of finding the right school for youths
 
-[!NOTE]
+> [!NOTE]
 > Useful information for team references
 **Documentations**  
 - [SC2006 idea docs](https://docs.google.com/document/d/1Fj-vPyJnf7ix3onUE3jTrdtBB-NYlnRz9uBgXQvdWAE/edit?usp=sharing)
