@@ -129,8 +129,8 @@ const PSGChat = () => {
           {Array.isArray(schoolList) && schoolList.map((school) => ( // Ensure schoolList is an array
             <button
               name={school.school_name}
-              key={school.id}
-              onClick={() => setSelectedSchool(school.id)}
+              key={school.postal_code}
+              onClick={() => setSelectedSchool(school.postal_code)}
               className={`block w-full text-left p-2 rounded-lg mb-2 ${
                 selectedSchool === school.school_id ? "bg-blue text-white" : "bg-gray-200"
               }`}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { APIProvider, Map, AdvancedMarker,Pin, InfoWindow } from "@vis.gl/react-google-maps";
+import { GoogleMap, InfoWindow,Marker } from "@react-google-maps/api"; 
+import { APIProvider, Map, AdvancedMarker,Pin } from "@vis.gl/react-google-maps";
 import axios from "axios";
 import marker from "../assets/marker.png";
 
@@ -7,7 +8,7 @@ import marker from "../assets/marker.png";
 const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], location, onClose, loading }) => {
   const [activeTab, setActiveTab] = useState("CCAs");
   const [coordinates, setCoordinates] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [showInfoWindow, setShowInfoWindow] = useState(false);
   
   /*
   console.log("Name:", name);
@@ -135,12 +136,13 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
         if (!coordinates) return <p>Location information not available.</p>;
         
         return (
+            <APIProvider apiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
               <div className="w-[100%] h-[500px]">
-                <Map zoom={15} center={coordinates} mapId={'d9da54f2adc837f7'}>
-                  <AdvancedMarker position={coordinates} onClick={() => setOpen(true)}></AdvancedMarker>
-                  {open && (<InfoWindow position={coordinates} onCloseClick={()=>setOpen(false)}><p>School Name:</p> <em>{name}</em> <p>Address:</p> <em>{location}</em></InfoWindow>)}
+                <Map zoom={15} center={coordinates} mapId={'DEMO_MAP_ID'}>
+                  <AdvancedMarker position={coordinates}></AdvancedMarker>
                 </Map>
               </div>
+            </APIProvider>
           );
 
       default:

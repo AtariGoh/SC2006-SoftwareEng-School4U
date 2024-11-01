@@ -80,7 +80,6 @@ const App = () => {
       {/* Page Content */}
       <div className="pt-16"></div> {/* Adjusted padding to avoid overlap */}
       <div className="pt-20">
-      <APIProvider googleMapsApiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/loginAndRegister" element={<LoginRegister />}>
@@ -97,7 +96,6 @@ const App = () => {
           <Route path = "/aftsecchat" element ={<AftSecChat/>}/>
           <Route path="/review" element={<Review />} />
         </Routes>
-        </APIProvider>
       </div>
       {/* Footer */}
       <footer className="bg-[#536493] text-white py-6 text-center">
