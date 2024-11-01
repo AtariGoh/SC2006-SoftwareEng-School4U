@@ -41,7 +41,7 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
 
     switch (activeTab) {
         case "CCAs":
-            console.log("query sch name for CCAs", name);
+            console.log("query sch name for CCAs", ccas);
         
             let filteredCCAs = [];
             let uniqueCCAsSet = new Set(); // Create a Set to track unique CCAs

@@ -45,26 +45,29 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   const handleAddSchool = async (schData) => {
     const schoolData = { data: schData }; 
     try {
-      const response = await fetch(`http://localhost:5000/api/addToFav`,{
+      const response = await fetch(`http://localhost:5000/api/addToFav`, {
         method: 'POST',
         headers: {
-          'Content-Type':'application/json',
+          'Content-Type': 'application/json',
         },
         credentials: 'include',
-       
-        body:JSON.stringify(schoolData)
+        body: JSON.stringify(schoolData),
       });
-      if (response.ok){
+  
+      const result = await response.json();
+  
+      if (response.ok) {
         console.log("Success YAYYYYY");
-      }
-      else{
-        console.log("oh no :((((9")
+        alert(result.message); // Display success message
+      } else {
+        alert(result.message || result.error); // Display error message from the backend
       }
     } catch (error) {
-      console.log("Runtime error :( ")
+      console.log("Runtime error :( ", error);
+      alert("A network error occurred. Please try again later.");
     }
-  }
-
+  };
+  
   return (
     <div className="p-4 bg-[#FAEDCE] border border-black shadow-md rounded-md flex justify-between items-center cursor-pointer hover:shadow-lg transition-shadow duration-300">
       <div>

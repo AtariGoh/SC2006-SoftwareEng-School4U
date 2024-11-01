@@ -109,20 +109,64 @@ app.get('/api/schools', async (req, res) => {
   
 
 
-  app.post('/api/addToFav',verifyToken, async(req,res)=>{
+  app.post('/api/addToFav', verifyToken, async (req, res) => {
     try {
       const school_name = req.body.data;
       console.log('Request Body:', school_name);
       const user_id = req.userId;
-      console.log("id", user_id)
-      const { data, error } = await supabase
+      console.log("id", user_id);
+  
+      // Check if the school already exists for this user
+      const { data: existingSchool, error: fetchError } = await supabase
+        .from('fav_schools')
+        .select('*')
+        .eq('school_name', school_name)
+        .eq('user_id', user_id)
+        .single(); // Single will ensure we only fetch one result if it exists
+  
+      if (fetchError) {
+        console.error("Error fetching existing record:", fetchError);
+        return res.status(500).json({ error: "An error occurred while checking existing school" });
+      }
+  
+      if (existingSchool) {
+        // School already exists for this user
+        return res.status(400).json({ message: "School already added to favorites" });
+      }
+  
+      // Insert if no existing record found
+      const { data, error: insertError } = await supabase
         .from('fav_schools')
         .insert([{ school_name, user_id }]);
   
-      return res.status(200).json({message:"School added"})
+      if (insertError) {
+        console.error("Error inserting record:", insertError);
+        return res.status(500).json({ error: "An error occurred while adding school" });
+      }
+  
+      return res.status(200).json({ message: "School added to favorites" });
+    } catch (error) {
+      console.error("Unexpected Error:", error);
+      res.status(500).json({ error: "An unexpected error occurred" });
+    }
+  });
+  
+
+
+  app.get('/api/fetchFav',verifyToken, async(req,res)=>{
+    try {
+      const user_id = req.userId;
+      console.log("id", user_id)
+      const { data, error } = await supabase
+      .from('fav_schools')
+      .select('school_name')
+      .eq('user_id', user_id);
+      
+  
+      return res.status(200).json(data)
     } catch (error) {
       console.error("Supabase Error:", error);
-      res.status(500).json({ error: "An error occurred while adding school" });
+      res.status(500).json({ error: "An error occurred while fetching school" });
     }
   })
 

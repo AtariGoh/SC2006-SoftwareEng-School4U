@@ -4,7 +4,33 @@ import { useNavigate } from 'react-router-dom';
 import InfoCard from '../components/InfoCard';
 import NameCard from '../components/NameCard';
 import { useAuth } from '../context/AuthContext.jsx';
-
+{/*{
+  name: 'Shuqun Primary School',
+  logo: 'https://png.pngtree.com/png-vector/20230609/ourlarge/pngtree-school-logo-design-template-vector-png-image_7125354.png',
+  sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
+  performingArts: ['Choir', 'Dance', 'Drama Club'],
+  clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
+  uniform: ['Scouts',],
+  subjects: ['English', 'Math', 'Science', 'Chinese', 'Music'],
+},
+{
+  name: 'Jurong West Primary School',
+  logo: 'https://png.pngtree.com/png-vector/20230311/ourlarge/pngtree-education-and-school-logo-design-template-vector-png-image_6644811.png',
+  sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
+  performingArts: ['Choir', 'Chinese Dance','Dance', 'Drama Club', 'IT Club'],
+  clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
+  uniform: ['Scouts','NCC', 'NPCC'],
+  subjects: ['English', 'Math', 'Science', 'Chinese', 'Music', 'Physical Education', 'Social Studies'],
+},
+{
+  name: 'Corporation Primary School',
+  logo: 'https://png.pngtree.com/png-vector/20230408/ourlarge/pngtree-school-logo-design-template-vector-png-image_6681515.png',
+  sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
+  performingArts: ['Choir', 'Dance', 'Drama Club'],
+  clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
+  uniform: ['Scouts',],
+  subjects: ['English', 'Math', 'Science', 'Chinese', 'Music', 'Character and Citizenship Education (CEE)'],
+},*/}
 
 const ComparisonDashboard = () => {
   const navigate = useNavigate();
@@ -16,36 +42,8 @@ const ComparisonDashboard = () => {
   const dropdownRef = useRef(null);
 
 
-{/*Dummy Schools*/}
-  const [allSchools, setAllSchools] = useState([
-  {
-    name: 'Shuqun Primary School',
-    logo: 'https://png.pngtree.com/png-vector/20230609/ourlarge/pngtree-school-logo-design-template-vector-png-image_7125354.png',
-    sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
-    performingArts: ['Choir', 'Dance', 'Drama Club'],
-    clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
-    uniform: ['Scouts',],
-    subjects: ['English', 'Math', 'Science', 'Chinese', 'Music'],
-  },
-  {
-    name: 'Jurong West Primary School',
-    logo: 'https://png.pngtree.com/png-vector/20230311/ourlarge/pngtree-education-and-school-logo-design-template-vector-png-image_6644811.png',
-    sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
-    performingArts: ['Choir', 'Chinese Dance','Dance', 'Drama Club', 'IT Club'],
-    clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
-    uniform: ['Scouts','NCC', 'NPCC'],
-    subjects: ['English', 'Math', 'Science', 'Chinese', 'Music', 'Physical Education', 'Social Studies'],
-  },
-  {
-    name: 'Corporation Primary School',
-    logo: 'https://png.pngtree.com/png-vector/20230408/ourlarge/pngtree-school-logo-design-template-vector-png-image_6681515.png',
-    sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
-    performingArts: ['Choir', 'Dance', 'Drama Club'],
-    clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
-    uniform: ['Scouts',],
-    subjects: ['English', 'Math', 'Science', 'Chinese', 'Music', 'Character and Citizenship Education (CEE)'],
-  },
-]);
+{/*User Schools*/}
+  const [allSchools, setAllSchools] = useState([]);
 
 {/*Save selected school for page reloading*/}
 const [selectedSchools, setSelectedSchools] = useState(() => {
@@ -65,6 +63,10 @@ useEffect(() => {
   };
 }, []);
 
+useEffect(()=>{
+  fetchUserSchools();
+},[])
+
 
 useEffect(() => {
   localStorage.setItem('selectedSchools', JSON.stringify(selectedSchools));
@@ -72,19 +74,42 @@ useEffect(() => {
 
 {/*Add and remove schools */}
 const handleRemoveSchool = (schoolName) => {
+  console.log(schoolName)
+  console.log(selectedSchools)
   setSelectedSchools((prevSchools) =>
-    prevSchools.filter((school) => school.name !== schoolName)
+    prevSchools.filter((school) => school.school_name !== schoolName)
   );
 };
 
 const handleAddSchool = (school) => {
+  console.log(school)
   if (
     selectedSchools.length < 3 &&
-    !selectedSchools.some((s) => s.name === school.name)
+    !selectedSchools.some((s) => s.name === school.school_name)
   ) {
     setSelectedSchools([...selectedSchools, school]);
   }
 };
+
+const fetchUserSchools = async()=>{
+  try {
+    const response = await fetch("http://localhost:5000/api/fetchFav", {credentials: 'include'})
+    if (response.ok){
+
+      const school = await response.json();
+      console.log("fetched schools yay", school)
+      setAllSchools(school);
+      console.log("stored schools",allSchools)
+
+    }
+    else{
+      console.log("response data error")
+    }
+    
+  } catch (error) {
+    console.log("runtime error")
+  }
+}
 
 
 {/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> :*/}
@@ -124,13 +149,13 @@ return (
       <ul>
         {allSchools.map((school) => (
           <li
-            key={school.name}
+            key={school.school_name}
             className="flex justify-between items-center p-2 hover:bg-gray-100"
           >
-            <span>{school.name}</span>
-            {selectedSchools.some((s) => s.name === school.name) ? (
+            <span>{school.school_name}</span>
+            {selectedSchools.some((s) => s.school_name === school.school_name) ? (
               <button
-                onClick={() => handleRemoveSchool(school.name)}
+                onClick={() => handleRemoveSchool(school.school_name)}
                 className="text-red-500"
               >
                 -
@@ -158,7 +183,7 @@ return (
         {selectedSchools.length > 0 ? 
         (<div className="flex flex-wrap items-start justify-center mt-12 space-x-8">
           {Array.from({ length: selectedSchools.length }).map((_, i) => (
-          <InfoCard key={i} schoolData={selectedSchools[i]}/>
+          <InfoCard key={i} schoolname={selectedSchools[i].school_name}/>
         ))}
         </div>) : (
           <div className="flex items-center justify-center min-h-screen">
