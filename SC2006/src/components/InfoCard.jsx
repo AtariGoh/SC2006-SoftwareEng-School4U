@@ -17,32 +17,66 @@ useEffect(()=>{
   fetchSchoolData();
 },[])
 
-  const fetchSchoolData = async () => {
+const fetchSchoolData = async () => {
+  try {
+    const queryParams = new URLSearchParams({
+      query: schoolname,
+    });
 
-    try {
-      const queryParams = new URLSearchParams({
-        query: schoolname, // Assuming 'name' will be used to filter
+    const response = await axios.get(
+      `http://localhost:5000/api/schools?${queryParams.toString()}`
+    );
+
+    if (response.status === 200) {
+      const { ccas, moeprog, subjects } = response.data;
+
+      // Filter unique CCAs by cca_name
+      const uniqueCCAsSet = new Set();
+      const filteredCCAs = ccas.filter((cca) => {
+        if (!uniqueCCAsSet.has(cca.cca_name)) {
+          uniqueCCAsSet.add(cca.cca_name);
+          return true;
+        }
+        return false;
       });
 
-      // Fetch data from the server with the query parameter
-      const response = await axios.get(
-        `http://localhost:5000/api/schools?${queryParams.toString()}`
-      );
+      // Filter unique Moe Programs by program name (assuming moeprog[i].program_name)
+      const uniqueProgsSet = new Set();
+      const filteredProgs = moeprog.filter((prog) => {
+        if (!uniqueProgsSet.has(prog.program_name)) {
+          uniqueProgsSet.add(prog.program_name);
+          return true;
+        }
+        return false;
+      });
 
-      if (response.status === 200) {
-        // Destructure and set the data from the response
-        const { ccas, moeprog, subjects } = response.data;
-        setCCAs(ccas || []);
-        setDistProg(moeprog || []);
-        setSubjects(subjects || []);
-        console.log("ccas",ccas)
-      } else {
-        console.error("Failed to fetch school details.");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } 
-  };
+      // Filter unique Subjects by subject category or name (assuming subjects[i].category or subjects[i].name)
+      const uniqueSubjectsSet = new Set();
+      const filteredSubjects = subjects.filter((subject) => {
+        const subjectKey = subject.category || subject.name; // Adjust based on the actual field in `subjects`
+        if (!uniqueSubjectsSet.has(subjectKey)) {
+          uniqueSubjectsSet.add(subjectKey);
+          return true;
+        }
+        return false;
+      });
+
+      // Set state with unique values
+      setCCAs(filteredCCAs);
+      setDistProg(filteredProgs);
+      setSubjects(filteredSubjects);
+
+      console.log("Filtered CCAs", filteredCCAs);
+      console.log("Filtered Programs", filteredProgs);
+      console.log("Filtered Subjects", filteredSubjects);
+    } else {
+      console.error("Failed to fetch school details.");
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
 
   const navigate = useNavigate();
   return (
