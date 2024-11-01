@@ -40,10 +40,13 @@ setup instructions:
 - supabase tables include
   ```
   - users
-    -
-
-
-  -
+    - uuid, username, email, password, name, mobile, residence
+  - PsgChat, ApChat, AsChat
+    - message_id, created_at, message, school_id, user_id
+  - fav_schools
+    - id, school_name, user_id
+  - school_reviews
+    - id, school_name, user_id
   ```
   
 # Folder Architectures 
