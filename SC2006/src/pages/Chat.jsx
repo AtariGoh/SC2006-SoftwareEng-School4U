@@ -12,7 +12,7 @@ const Chat = () => {
   const [isVerified, setIsVerified] = useState(false); // New state for authentication
   const[allChats, setAllChats]=useState([]);
   const location = useLocation(); //to link compare dashboard 
-  //const { loggedIn, setLoggedIn } = useAuth();
+  const { loggedIn, setLoggedIn } = useAuth();
 
   useEffect(() => {
 
@@ -63,8 +63,9 @@ const Chat = () => {
   }, []);
 
 
-  {/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> : */}
+
   return ( 
+    !loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> : 
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold mb-4">Parents Chat Forum</h2>
       <p className="text-lg mb-6">

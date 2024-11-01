@@ -4,35 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import InfoCard from '../components/InfoCard';
 import NameCard from '../components/NameCard';
 import { useAuth } from '../context/AuthContext.jsx';
-{/*{
-  name: 'Shuqun Primary School',
-  logo: 'https://png.pngtree.com/png-vector/20230609/ourlarge/pngtree-school-logo-design-template-vector-png-image_7125354.png',
-  sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
-  performingArts: ['Choir', 'Dance', 'Drama Club'],
-  clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
-  uniform: ['Scouts',],
-  subjects: ['English', 'Math', 'Science', 'Chinese', 'Music'],
-},
-{
-  name: 'Jurong West Primary School',
-  logo: 'https://png.pngtree.com/png-vector/20230311/ourlarge/pngtree-education-and-school-logo-design-template-vector-png-image_6644811.png',
-  sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
-  performingArts: ['Choir', 'Chinese Dance','Dance', 'Drama Club', 'IT Club'],
-  clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
-  uniform: ['Scouts','NCC', 'NPCC'],
-  subjects: ['English', 'Math', 'Science', 'Chinese', 'Music', 'Physical Education', 'Social Studies'],
-},
-{
-  name: 'Corporation Primary School',
-  logo: 'https://png.pngtree.com/png-vector/20230408/ourlarge/pngtree-school-logo-design-template-vector-png-image_6681515.png',
-  sports: ['Badminton', 'Soccer', 'Track & Field', 'Taekwondo'],
-  performingArts: ['Choir', 'Dance', 'Drama Club'],
-  clubsSociety: ['Robotics', 'Art and Craft', 'Green Club' ],
-  uniform: ['Scouts',],
-  subjects: ['English', 'Math', 'Science', 'Chinese', 'Music', 'Character and Citizenship Education (CEE)'],
-},*/}
 
 const ComparisonDashboard = () => {
+  const { loggedIn, setLoggedIn } = useAuth()
   const navigate = useNavigate();
   //const { loggedIn, setLoggedIn } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -74,8 +48,6 @@ useEffect(() => {
 
 {/*Add and remove schools */}
 const handleRemoveSchool = (schoolName) => {
-  console.log(schoolName)
-  console.log(selectedSchools)
   setSelectedSchools((prevSchools) =>
     prevSchools.filter((school) => school.school_name !== schoolName)
   );
@@ -112,8 +84,9 @@ const fetchUserSchools = async()=>{
 }
 
 
-{/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> :*/}
 return ( 
+  
+!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> :
     <div className="-mt-3 min-h-screen bg-gray-100 p-0">
       {/* navigation bar*/}
       <div className="flex justify-between p-2 left-0 bg-[#EF5A6F] shadow-md z-40">
@@ -129,7 +102,7 @@ return (
             </div>
             ) : null}
           </div>                         
-          <p className="text-base mx-9 my-1 float-left "> Displaying {selectedSchools.length} {selectedSchools.length>1 ? "schools" : "school"}.</p> 
+          <p className="text-base mx-9 my-1 float-left "> Displaying {selectedSchools.length} {selectedSchools.length>1 ? "schools" : "school"}. (Max 3)</p> 
         </div>
         <div className="testButton">
         <div className="relative">

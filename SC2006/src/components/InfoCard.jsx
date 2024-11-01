@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import ReviewCard from './ReviewCard';
 
 const labelClass = "m-4 text-white border-sky-800 p-2 rounded-2xl bg-sky-800 my-4";
 const subLabel = "font-bold float-left my-3";
@@ -12,10 +13,15 @@ const InfoCard = ({schoolname}) => {
   const [ccas, setCCAs] = useState([]);
   const [distProgs, setDistProg] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [showExpanded, setShowExpanded] = useState(false);
 
 useEffect(()=>{
   fetchSchoolData();
 },[])
+
+const handleClose = () => {
+  setShowExpanded(false);
+};
 
 const fetchSchoolData = async () => {
   try {
@@ -127,7 +133,21 @@ const fetchSchoolData = async () => {
       </div>
       <div className="flex flex-col items-center">
                   <button className={`${linkButton} bg-rose-500 w-60`} onClick={()=> navigate('/chat')}>Chat with the community</button>
-                  <button className={`${linkButton} bg-yellow-800 bg-opacity-40 w-60`}>View Reviews</button>
+                  <button
+  className={`${linkButton} bg-green-800 w-60`}
+  onClick={() => setShowExpanded(true)} // Use an arrow function here
+>
+  View Reviews
+</button>
+
+      </div>
+      <div>
+      {showExpanded && (
+          <ReviewCard
+            name={schoolname}
+            onClose={handleClose}
+          />
+      )}
       </div>
     </div>
   );

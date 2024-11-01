@@ -150,6 +150,59 @@ app.get('/api/schools', async (req, res) => {
       res.status(500).json({ error: "An unexpected error occurred" });
     }
   });
+
+  app.post('/api/addReview', verifyToken, async (req, res) => {
+    try {
+      const { name: school_name, facilities: rating_f, accessibility: rating_a, useful: rating_t, comment: review } = req.body;
+      const user_id = req.userId;
+      console.log('Request Body:', req.body);
+      console.log("id", user_id);
+      // Insert review data into the 'fav_schools' table
+      const { data, error } = await supabase
+        .from('school_reviews')
+        .insert([{ school_name, user_id, rating_f, rating_a, rating_t, review }]);
+  
+      if (error) {
+        console.error("Error inserting record:", error);
+        return res.status(500).json({ error: "An error occurred while adding review" });
+      }
+  
+      return res.status(200).json({ message: "Review added successfully" });
+    } catch (error) {
+      console.error("Unexpected Error:", error);
+      res.status(500).json({ error: "An unexpected error occurred" });
+    }
+  });
+  
+
+  app.get('/api/getReview', verifyToken, async (req, res) => {
+    try {
+      const school_name = req.query.name; // Access the query parameter 'name'
+      const user_id = req.userId;
+    
+  
+      console.log('School Name:', school_name);
+      console.log("User ID:", user_id);
+  
+      // Query the database for the specified school
+      const { data, error } = await supabase
+        .from('school_reviews')
+        .select("*")
+        .eq('school_name', school_name);
+      console.log("data",data)
+      if (error) {
+        console.error("Error fetching record:", error);
+        return res.status(500).json({ error: "An error occurred while fetching review" });
+      }
+  
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error("Unexpected Error:", error);
+      res.status(500).json({ error: "An unexpected error occurred" });
+    }
+  });
+  
+  
   
 
 

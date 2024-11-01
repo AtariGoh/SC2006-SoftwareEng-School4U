@@ -15,6 +15,7 @@ import Review from "./pages/Review";
 import logo from "./assets/removebg.png";
 import { useAuth } from './context/AuthContext.jsx';
 import { APIProvider } from "@vis.gl/react-google-maps";
+import SchoolReview from "./pages/SchoolReview.jsx";
 
 const App = () => {
   const { loggedIn, setLoggedIn } = useAuth()
@@ -95,6 +96,7 @@ const App = () => {
           <Route path = "/aftprichat" element ={<AftPriChat/>}/>
           <Route path = "/aftsecchat" element ={<AftSecChat/>}/>
           <Route path="/review" element={<Review />} />
+          <Route path="/school-review" element={<SchoolReview />} />
         </Routes>
       </div>
       {/* Footer */}

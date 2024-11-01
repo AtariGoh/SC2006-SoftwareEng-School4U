@@ -79,7 +79,7 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
       <div className="space-x-2">
         <button
           onClick={() => fetchSchoolData()} // Fetch school details on button click
-          className="bg-blue text-white px-4 py-2 rounded-md"
+          className="bg-blue text-white px-4 py-2 rounded-md shadow-lg hover:shadow-2xl hover:bg-[#1A237E] transition duration-300"
         >
           See Details
         </button>
@@ -87,7 +87,7 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
           onClick={(e) => {
             handleAddSchool(name);
           }}
-          className="bg-[#EF5A6F] text-white px-4 py-2 rounded-md"
+          className="bg-[#EF5A6F] text-white px-4 py-2 rounded-md shadow-lg hover:shadow-2xl hover:bg-[#CC4A5E] transition duration-300"
         >
           Add to Compare
         </button>
@@ -98,7 +98,7 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
               state: { name },
             });
           }}
-          className="bg-brown text-white px-4 py-2 rounded-md"
+          className="bg-brown text-white px-4 py-2 rounded-md shadow-lg hover:shadow-2xl hover:bg-[#4B2E2A] transition duration-300"
         >
           Review
         </button>
