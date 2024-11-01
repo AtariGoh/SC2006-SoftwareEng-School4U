@@ -47,7 +47,7 @@ setup instructions:
   ```
   
 # Folder Architectures 
-- `:file_folder: src/App.jsx`
+`:file_folder: src/App.jsx`
   - entry point and main running file and coordiantes the rendering of the app's components and serves as the central hub for setting up routing, state management, and other essential configurations.
 - `:file_folder: src/index.css`
   - contains the styling and libraries of tailwind base, components, utilities.
