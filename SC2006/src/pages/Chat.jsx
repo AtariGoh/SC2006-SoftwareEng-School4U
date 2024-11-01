@@ -2,7 +2,7 @@ import React from "react";
 import ButtonCardForChat from "../components/ButtonCardForChat"; // Reusable card component
 import { useState, useEffect } from "react";
 import psgImage from "../assets/psg-image.png";
-import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
+import afterpri from "../assets/apchat.png";
 import aftsec from "../assets/after-secondary.png"
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';

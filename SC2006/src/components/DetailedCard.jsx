@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
-import { GoogleMap, InfoWindow,Marker } from "@react-google-maps/api"; 
-import { APIProvider, Map, AdvancedMarker,Pin } from "@vis.gl/react-google-maps";
+import { useState, useEffect } from "react"; 
+import { APIProvider, Map, AdvancedMarker,Pin, InfoWindow } from "@vis.gl/react-google-maps";
 import axios from "axios";
 import marker from "../assets/marker.png";
 
@@ -139,7 +138,9 @@ const DetailedCard = ({ name, ccas = [], subjects = [], programmes = [], locatio
             <APIProvider apiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
               <div className="w-[100%] h-[500px]">
                 <Map zoom={15} center={coordinates} mapId={'DEMO_MAP_ID'}>
-                  <AdvancedMarker position={coordinates}></AdvancedMarker>
+                  <AdvancedMarker position={coordinates} onClick={() => setShowInfoWindow(true)}></AdvancedMarker>
+
+                  {showInfoWindow && <InfoWindow position={coordinates}><p>School name: {name}</p> <p>Address:{location}</p></InfoWindow>}
                 </Map>
               </div>
             </APIProvider>
