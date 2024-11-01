@@ -106,8 +106,12 @@ app.get('/api/schools', async (req, res) => {
       res.status(500).json({ error: "Failed to fetch school data" });
     }
   });
-  
 
+  app.get('/api/verifySession', verifyToken, (req, res) => {
+    // If token is valid, this route sends back loggedIn: true
+    res.status(200).json({ loggedIn: true });
+  });
+  
 
   app.post('/api/addToFav', verifyToken, async (req, res) => {
     try {

@@ -16,16 +16,36 @@ import logo from "./assets/removebg.png";
 import { useAuth } from './context/AuthContext.jsx';
 import { APIProvider } from "@vis.gl/react-google-maps";
 import SchoolReview from "./pages/SchoolReview.jsx";
+import { useState, useEffect } from "react";
 
 const App = () => {
   const { loggedIn, setLoggedIn } = useAuth()
 
 
   const handleLogout = async () => {
-    await fetch(`$http://localhost:5000/api/logout`, { method: 'POST', credentials: 'include' });
+    await fetch(`http://localhost:5000/api/logout`, { method: 'POST', credentials: 'include' });
     setLoggedIn(false);
     window.location.href = '/'; // Optional: Redirect to homepage on logout
   };
+  
+  useEffect(() => {
+    const verifySession = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/verifySession', { credentials: 'include' });
+        if (response.ok) {
+          const data = await response.json();
+          setLoggedIn(data.loggedIn);
+        } else {
+          setLoggedIn(false);
+        }
+      } catch (error) {
+        console.error('Error checking auth:', error);
+        setLoggedIn(false);
+      }
+    };
+
+    verifySession(); // Check session on app load
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
