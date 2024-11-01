@@ -122,7 +122,7 @@ app.get('/api/schools', async (req, res) => {
         .select('*')
         .eq('school_name', school_name)
         .eq('user_id', user_id)
-        .single(); // Single will ensure we only fetch one result if it exists
+        .maybeSingle(); // Single will ensure we only fetch one result if it exists
   
       if (fetchError) {
         console.error("Error fetching existing record:", fetchError);
