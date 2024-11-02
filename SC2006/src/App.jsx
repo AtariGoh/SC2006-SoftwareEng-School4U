@@ -165,14 +165,7 @@ const App = () => {
                 </motion.div>
               }
             />
-            <Route
-              path="/school/:id"
-              element={
-                <motion.div {...fadeTransition}>
-                  <DetailedCard />
-                </motion.div>
-              }
-            />
+            <Route path="/school/:id" element={<DetailedCard />} />
             <Route
               path="/chat"
               element={
