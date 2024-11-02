@@ -19,6 +19,7 @@ const verifyToken = (req, res, next) => {
 
     // If valid, set the decoded userId to the request object for use in routes
     req.userId = decoded.userId;
+    req.username = decoded.userName;
     next(); // Pass control to the next middleware or route handler
   });
 };

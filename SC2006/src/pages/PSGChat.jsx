@@ -89,6 +89,7 @@ const PSGChat = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: newMessage, school_id: selectedSchool }),
+          credentials: "include",
         });
 
         if (response.ok) {
@@ -195,7 +196,7 @@ const PSGChat = () => {
                     isHighlighted ? "bg-yellow-200" : "bg-gray-200"
                   } ${isCurrentResult ? "border-2 border-blue" : ""}`}
                 >
-                  {msg.message}
+                  {msg.username + ": " + msg.message}
                 </div>
               );
             })

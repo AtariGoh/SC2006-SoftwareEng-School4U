@@ -4,6 +4,8 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 
+
+
 // Route to fetch all chat messages
 router.get('/apchat/:school_id', async (req, res) => {
   const{school_id}=req.params;
