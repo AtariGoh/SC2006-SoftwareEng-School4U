@@ -179,7 +179,7 @@ const DetailedCard = ({
         </div>
 
         {/* Tab Content with Small Scrollable Area */}
-        <div className="text-gray-700 max-h-72 overflow-y-auto p-4 bg-[#FAEDCE]">
+        <div className="text-gray-700 max-h-80 overflow-y-auto p-4 bg-[#FAEDCE]">
           {renderContent()}
         </div>
       </div>
