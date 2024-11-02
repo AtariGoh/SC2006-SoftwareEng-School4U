@@ -6,13 +6,12 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:5173", // Local development
 ];
-
+app.use(express.json()); // Make sure this is included in your server setup
 
 //Middleware
 app.use(cookieParser());
@@ -248,6 +247,39 @@ app.get('/api/schools', async (req, res) => {
       res.status(500).json({ error: "An error occurred while fetching school" });
     }
   })
+
+
+
+  app.delete('/api/deleteFav', verifyToken, async (req, res) => {
+    try {
+      const user_id = req.userId;
+      const { school_name } = req.body.school_name; // Directly extract school_name from req.body
+  
+      console.log("User ID:", user_id, "School to delete:", school_name);
+  
+      if (!school_name) {
+        return res.status(400).json({ error: "School name is required" });
+      }
+  
+      const { data, error } = await supabase
+        .from('fav_schools')
+        .delete()
+        .eq('user_id', user_id)
+        .eq('school_name', school_name);
+  
+      if (error) {
+        throw error;
+      }
+  
+      res.status(200).json({ message: "School successfully deleted", data });
+    } catch (error) {
+      console.error("Supabase Error:", error);
+      res.status(500).json({ error: "An error occurred while deleting the school" });
+    }
+  });
+  
+  
+
 
   app.post('/api/logout', (req, res) => {
     res.clearCookie('accessToken',
