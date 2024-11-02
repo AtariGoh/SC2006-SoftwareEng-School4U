@@ -8,6 +8,7 @@
 - [SC2006 idea docs](https://docs.google.com/document/d/1Fj-vPyJnf7ix3onUE3jTrdtBB-NYlnRz9uBgXQvdWAE/edit?usp=sharing)
 - [SRS 2006](https://entuedu-my.sharepoint.com/:w:/r/personal/ykang008_e_ntu_edu_sg/_layouts/15/Doc.aspx?sourcedoc=%7B7C2D36C1-69E1-4F04-882E-622DAB463400%7D&file=SRS%202006.docx&action=default&mobileredirect=true&wdOrigin=WAC.WORD.HOME-BUTTON%2CAPPHOME-WEB.FILEBROWSER.RECENT&wdPreviousSession=59369843-28ac-4b6c-85ca-2faf2c444719&wdPreviousSessionSrc=AppHomeWeb&ct=1730441720975)
 - [test cases](https://entuedu-my.sharepoint.com/:w:/g/personal/leep0066_e_ntu_edu_sg/EeBc_fuksGFJkLcF2fgWmkIB5CWCkqzDZ0Nz0vkeBZC3lA?e=Lk9qqH)
+- [Presentation slides](https://www.canva.com/design/DAGVNrEg-rY/I1RtWye_7tHf35rRDZp_lg/edit?utm_content=DAGVNrEg-rY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 **Steps to test and run codes:**  
 frontend:  
