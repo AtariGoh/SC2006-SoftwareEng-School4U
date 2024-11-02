@@ -61,7 +61,6 @@ const App = () => {
   };
 
   return (
-    <APIProvider googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
       <div className="min-h-screen bg-gray-100">
         {/* NavBar */}
         <nav className="fixed top-0 left-0 w-full bg-[#536493] py-4 text-white shadow-md z-50">
@@ -231,7 +230,6 @@ const App = () => {
           | <span>www.rightschoolforyourkid.com</span>
         </footer>
       </div>
-    </APIProvider>
   );
 };
 
