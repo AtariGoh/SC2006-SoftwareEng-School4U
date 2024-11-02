@@ -115,7 +115,7 @@ const DetailedCard = ({
         if (!coordinates) return <p>Location information not available.</p>;
 
         return (
-          <APIProvider apiKey="YOUR_GOOGLE_MAPS_API_KEY">
+          <APIProvider apiKey="AIzaSyBSL1FdwBDJ5SbXDOpdguvatCAg5gZ6SJM">
             <div className="w-full h-80">
               <Map zoom={15} center={coordinates} mapId="DEMO_MAP_ID">
                 <AdvancedMarker
