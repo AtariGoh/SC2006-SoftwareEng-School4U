@@ -178,6 +178,28 @@ app.get('/api/schools', async (req, res) => {
     }
   });
   
+  app.post('/api/addFeedback', verifyToken, async (req, res) => {
+    try {
+      const { features: rating_f, accessibility: rating_a, useful: rating_t, comment: review } = req.body;
+      const user_id = req.userId;
+      console.log('Request Body:', req.body);
+      console.log("id", user_id);
+      // Insert review data into the 'fav_schools' table
+      const { data, error } = await supabase
+        .from('school_feedback')
+        .insert([{user_id, rating_f, rating_a, rating_t, review }]);
+  
+      if (error) {
+        console.error("Error inserting record:", error);
+        return res.status(500).json({ error: "An error occurred while adding review" });
+      }
+  
+      return res.status(200).json({ message: "Review added successfully" });
+    } catch (error) {
+      console.error("Unexpected Error:", error);
+      res.status(500).json({ error: "An unexpected error occurred" });
+    }
+  });
 
   app.get('/api/getReview', verifyToken, async (req, res) => {
     try {
