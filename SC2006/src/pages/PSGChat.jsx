@@ -87,6 +87,7 @@ const PSGChat = () => {
               message: newMessage,
               school_id: selectedSchool,
             }),
+            credentials: 'include',
           }
         );
 
