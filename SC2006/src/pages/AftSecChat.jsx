@@ -146,7 +146,7 @@ const AftSecChat = () => {
         <div className="p-4 bg-brown flex justify-between items-center border-b border-gray-300">
           <div className="flex items-center">
             <img src={asImage} alt="Group" className="w-12 h-12 rounded-full mr-3" />
-            <h2 className="text-2xl font-bold text-536493">Journey After Primary School</h2>
+            <h2 className="text-2xl font-bold text-536493">Journey After Secondary School</h2>
           </div>
           <div className="flex items-center">
             <input
