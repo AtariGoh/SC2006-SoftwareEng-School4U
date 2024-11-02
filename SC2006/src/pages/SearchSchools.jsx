@@ -196,7 +196,7 @@ const SearchSchools = () => {
             >
               <SchoolCard
                 name={school.school_name}
-                programme={school.postal_code}
+                postal_code={school.postal_code}
                 location={school.address}
                 onClick={() => !loading && navigate(`/school/${school.id}`)}
                 onCompare={() => console.log(`Added ${school.school_name} to compare`)}
