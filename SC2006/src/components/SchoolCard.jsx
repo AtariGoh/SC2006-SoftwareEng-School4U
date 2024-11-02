@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import DetailedCard from "./DetailedCard";
 import { useState } from "react";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext.jsx";
  
 const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   const navigate = useNavigate();
@@ -10,10 +11,11 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   const [distProgs, setDistProg] = useState([]);
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const { loggedIn, setLoggedIn } = useAuth()
   // Fetch school data based on the school name
   const fetchSchoolData = async () => {
     setLoading(true); // Start loading
+
 
     try {
       const queryParams = new URLSearchParams({
@@ -91,7 +93,7 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
         >
           Add to Compare
         </button>
-        <button
+        {loggedIn ?         <button
           onClick={(e) => {
             e.stopPropagation(); // Prevent card click from triggering
             navigate("/school-review", {
@@ -101,7 +103,8 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
           className="bg-brown text-white px-4 py-2 rounded-md shadow-lg hover:shadow-2xl hover:bg-[#4B2E2A] transition duration-300"
         >
           Review
-        </button>
+        </button> : <div>Login to add reviews</div>}
+
       </div>
 
       {/* Render DetailedCard only if showExpanded is true */}
