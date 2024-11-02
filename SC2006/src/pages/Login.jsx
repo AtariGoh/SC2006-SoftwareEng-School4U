@@ -1,9 +1,11 @@
 import { useState } from 'react'; 
 import { useAuth } from '../context/AuthContext.jsx';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ username: '', password: '' });
   const { loggedIn, setLoggedIn } = useAuth()
+  const navigate = useNavigate();
   
 
   const handleChange = (e) => {
@@ -33,6 +35,8 @@ const Login = () => {
       if (response.ok) {
         const result = await response.json();
         setLoggedIn(true); // Assume user is logged in if the login request succeeds
+        alert("Logged in successfully")
+        navigate('/');
       }
        else {
         const error = await response.json();
