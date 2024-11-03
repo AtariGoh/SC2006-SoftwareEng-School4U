@@ -120,6 +120,18 @@ const AftPriChat = () => {
     }
   };
 
+  const formattedDate = (createdAt) => {
+    const date = new Date(createdAt);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
   return (
     <div className="flex h-screen m-0 p-0">
       {/* Sidebar */}
@@ -227,7 +239,7 @@ const AftPriChat = () => {
                   style={{ overflowWrap: "break-word" }}
                 >
                   <p className="text-xs text-gray-500 mb-1">
-                    {new Date().toLocaleTimeString()}
+                    {formattedDate(msg.created_at)}
                   </p>
                   <p className="text-gray-800">{msg.message}</p>
                 </div>
