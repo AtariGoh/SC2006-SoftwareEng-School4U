@@ -23,7 +23,11 @@ router.post('/signup', async (req, res) => {
         if (error) {
             console.error('Error inserting user:', error);
             if (error.code === '23505') {
-                return res.status(400).json({ error: "Email already exists" });
+                if (error.message.includes('username')) {
+                    return res.status(400).json({ error: "Username already exists" });
+                } else if (error.message.includes('email')) {
+                    return res.status(400).json({ error: "Email already exists" });
+                }
             }
             return res.status(400).json({ error: error.message || "Error inserting user" });
         }

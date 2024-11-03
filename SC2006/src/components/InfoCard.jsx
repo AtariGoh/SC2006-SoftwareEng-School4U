@@ -122,11 +122,12 @@ const fetchSchoolData = async () => {
         
           <div className={labelClass}>Subjects</div>
           <div className="w-full text-left">
-              <ol className={subjectsInfo}>
-                {subjects.map((subjects)=> (
-                  <li className="my-2 mx-5" key={subjects}>{subjects.category}</li>
-                ))}
-              </ol>
+          <ol className={subjectsInfo}>
+  {subjects.map((subject, index) => (
+    <li className="my-2 mx-5" key={subject.category || index}>{subject.category}</li>
+  ))}
+</ol>
+
           </div>
         </div>
         

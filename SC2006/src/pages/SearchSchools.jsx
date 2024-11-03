@@ -157,7 +157,6 @@ const SearchSchools = () => {
             >
               <option value="name-asc">Name (A-Z)</option>
               <option value="name-desc">Name (Z-A)</option>
-              <option value="ratings">Ratings</option>
             </select>
           </div>
         </div>

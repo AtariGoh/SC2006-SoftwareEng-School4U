@@ -63,6 +63,19 @@ const handleAddSchool = (school) => {
   }
 };
 
+const RemoveFavSchool = async(schoolName) =>{
+  try {
+    const response = await fetch("http://localhost:5000/api/deleteFav",{method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ school_name: schoolName })})
+      console.log("sent")
+    
+  } catch (error) {
+    console.log("runtime error")
+  }
+}
+
 const fetchUserSchools = async()=>{
   try {
     const response = await fetch("http://localhost:5000/api/fetchFav", {credentials: 'include'})
@@ -98,7 +111,7 @@ return (
             ))}
             {selectedSchools.length < 3 ?(
             <div className="flex justify-center items-center h-full px-2">
-              <button className="bg-[#536493] text-white h-10 rounded-xl p-1 px-3 -mr-5" onClick={()=>{navigate("/search")}}>Add School</button>
+              <button className="bg-[#536493] text-white h-10 rounded-xl p-1 px-3 -mr-5" onClick={()  =>{navigate("/search")}}>Add School</button>
             </div>
             ) : null}
           </div>                         
@@ -122,10 +135,25 @@ return (
       <ul>
         {allSchools.map((school) => (
           <li
-            key={school.school_name}
-            className="flex justify-between items-center p-2 hover:bg-gray-100"
+          key={school.school_name}
+          className="flex justify-between items-center p-2 hover:bg-gray-100"
+        >
+          <button
+            onClick={ () => {
+              RemoveFavSchool(school);
+              handleRemoveSchool(school.school_name);
+              setAllSchools((prevAllSchools) => prevAllSchools.filter((s) => s.school_name !== school.school_name));
+            }}
+            className="w-full h-[70px] text-left flex justify-between items-center hover:bg-red"
+            onMouseEnter={(e) => {
+              e.target.innerText = 'Delete School';
+            }}
+            onMouseLeave={(e) => {
+              e.target.innerText = school.school_name;
+            }}
           >
-            <span>{school.school_name}</span>
+            {school.school_name}
+          </button>
             {selectedSchools.some((s) => s.school_name === school.school_name) ? (
               <button
                 onClick={() => handleRemoveSchool(school.school_name)}
