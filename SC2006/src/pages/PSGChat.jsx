@@ -87,7 +87,6 @@ const PSGChat = () => {
               message: newMessage,
               school_id: selectedSchool,
             }),
-            credentials: 'include',
           }
         );
 
@@ -172,7 +171,7 @@ const PSGChat = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            {searchResults.length > 0 && (
+            {searchResults.length > 0 ? (
               <div className="flex space-x-2 items-center">
                 <span>{`${currentSearchIndex + 1} of ${
                   searchResults.length
@@ -192,7 +191,11 @@ const PSGChat = () => {
                   <FaArrowDown />
                 </button>
               </div>
-            )}
+            ) : searchTerm ? (
+              <span className="text-black font-semibold ml-2">
+                Message not found
+              </span>
+            ) : null}
           </div>
         </div>
 
