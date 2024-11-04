@@ -25,7 +25,10 @@ const AftSecChat = () => {
       );
 
       if (response.status === 200) {
-        setSchoolList(response.data.schools);
+        const secondarySchools = response.data.schools.filter(
+          (school) => !school.school_name.toLowerCase().includes("primary")
+        );
+        setSchoolList(secondarySchools);
       } else {
         throw new Error("Failed to fetch schools.");
       }
