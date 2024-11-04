@@ -167,7 +167,7 @@ const SearchSchools = () => {
             <div className="flex space-x-4">
               <input
                 type="text"
-                placeholder="Level (Primary, Secondary)"
+                placeholder="Level (Primary, Secondary, Junior College)"
                 value={level}
                 onChange={(e) => setLevel(e.target.value)}
                 className="flex-1 p-2 border border-black rounded-md bg-[#FAEDCE]"
