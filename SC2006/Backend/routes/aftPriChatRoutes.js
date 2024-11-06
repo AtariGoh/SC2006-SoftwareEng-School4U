@@ -3,7 +3,7 @@ const router = express.Router();
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
-
+const verifyToken = require('../Auth')
 
 
 // Route to fetch all chat messages
@@ -29,13 +29,13 @@ router.get('/apchat/:school_id', async (req, res) => {
 });
 
 // Route to post a new message
-router.post('/apchat/messages', async (req, res) => {
+router.post('/apchat/messages',verifyToken, async (req, res) => {
   const { message, school_id } = req.body;  // Destructure sender and message from the request body
-
+  const username = req.username;
   try {
     const { data, error } = await supabase
       .from('ApChat')
-      .insert([{message, school_id }])   //add user 
+      .insert([{message, school_id,username }])   //add user 
       .select("*");
 
     if (error) {

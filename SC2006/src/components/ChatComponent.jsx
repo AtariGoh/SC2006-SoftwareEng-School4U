@@ -32,6 +32,7 @@ const ChatComponent = ({
       if (response.status === 200) {
         const filteredSchools = response.data.schools.filter(schoolFilter);
         setSchoolList(filteredSchools);
+        console.log(filteredSchools)
       } else {
         throw new Error("Failed to fetch schools.");
       }
