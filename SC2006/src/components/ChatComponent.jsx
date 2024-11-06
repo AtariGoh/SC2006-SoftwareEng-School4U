@@ -93,6 +93,7 @@ const ChatComponent = ({
               message: newMessage,
               school_id: selectedSchool,
             }),
+            credentials: "include"
           }
         );
 
