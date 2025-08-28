@@ -77,7 +77,9 @@ const ChatComponent = ({
       };
 
       fetchMessages();
-      const intervalId = setInterval(fetchMessages, 2000);
+      // 🚀 PERFORMANCE FIX: Reduced from 2s to 30s polling
+      // Consider using WebSockets or Supabase real-time subscriptions for better performance
+      const intervalId = setInterval(fetchMessages, 30000); // 30 seconds instead of 2
       return () => clearInterval(intervalId);
     }
   }, [selectedSchool, searchTerm, apiEndpoint]);

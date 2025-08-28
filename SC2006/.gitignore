@@ -30,3 +30,12 @@ dist-ssr
 .env.test.local
 .env.production.local
 .env
+
+# Test and development files
+test-*.js
+*test*.js
+cookies.txt
+*.log
+deleteme.*
+*FIXED*
+health-check.js

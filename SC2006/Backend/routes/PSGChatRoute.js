@@ -5,6 +5,9 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 const verifyToken = require('../Auth')
 
+// 🚀 PERFORMANCE: Simple in-memory cache
+const messageCache = new Map();
+const CACHE_TTL = 30000; // 30 seconds cache
 
 // Route to fetch all chat messages
 router.get('/psgchat/:school_id', async (req, res) => {
@@ -20,6 +23,14 @@ router.get('/psgchat/:school_id', async (req, res) => {
         error: "Invalid school_id parameter",
         details: "school_id must be a valid number"
       });
+    }
+
+    // 🚀 PERFORMANCE: Check cache first
+    const cacheKey = `psg_${school_id}`;
+    const cached = messageCache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
+      console.log('✅ Returning cached PSG messages for school_id:', school_id);
+      return res.status(200).json(cached.data);
     }
 
     // Fetching all messages from the 'PsgChat' table
@@ -44,6 +55,13 @@ router.get('/psgchat/:school_id', async (req, res) => {
     }
 
     console.log(`✅ Successfully fetched ${messages?.length || 0} PSG chat messages`);
+    
+    // 🚀 PERFORMANCE: Cache the results
+    messageCache.set(cacheKey, {
+      data: messages || [],
+      timestamp: Date.now()
+    });
+    
     res.status(200).json(messages || []);
     
   } catch (error) {
