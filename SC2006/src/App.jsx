@@ -23,7 +23,7 @@ const App = () => {
   const location = useLocation(); // Get current location for transitions
 
   const handleLogout = async () => {
-    await fetch(`http://localhost:5000/api/logout`, {
+    await fetch(`http://localhost:5001/api/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -35,7 +35,7 @@ const App = () => {
     const verifySession = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5000/api/verifySession",
+          "http://localhost:5001/api/verifySession",
           { credentials: "include" }
         );
         if (response.ok) {

@@ -8,9 +8,20 @@ const verifyToken = require('../Auth')
 
 // Route to fetch all chat messages
 router.get('/psgchat/:school_id', async (req, res) => {
-  const{school_id}=req.params;
+  const { school_id } = req.params;
 
   try {
+    console.log('🔍 Fetching PSG chat messages for school_id:', school_id);
+    
+    // Input validation
+    if (!school_id || isNaN(school_id)) {
+      console.log('❌ Invalid school_id provided:', school_id);
+      return res.status(400).json({ 
+        error: "Invalid school_id parameter",
+        details: "school_id must be a valid number"
+      });
+    }
+
     // Fetching all messages from the 'PsgChat' table
     const { data: messages, error } = await supabase
       .from('PsgChat')
@@ -19,37 +30,141 @@ router.get('/psgchat/:school_id', async (req, res) => {
       .order('created_at', { ascending: true }); // Order by timestamp ascending
 
     if (error) {
-      throw new Error('Error fetching messages');
+      console.error('❌ Supabase error in PSG chat fetch:', {
+        error: error,
+        school_id: school_id,
+        timestamp: new Date().toISOString()
+      });
+      
+      return res.status(500).json({ 
+        error: "Database error while fetching messages",
+        details: error.message,
+        code: error.code || 'UNKNOWN_DB_ERROR'
+      });
     }
 
-    res.status(200).json(messages);
+    console.log(`✅ Successfully fetched ${messages?.length || 0} PSG chat messages`);
+    res.status(200).json(messages || []);
+    
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('❌ Unexpected error in PSG chat fetch:', {
+      error: error.message,
+      stack: error.stack,
+      school_id: school_id,
+      timestamp: new Date().toISOString()
+    });
+    
+    res.status(500).json({ 
+      error: "Internal server error",
+      details: "An unexpected error occurred while fetching chat messages",
+      requestId: Date.now() // Help with debugging
+    });
   }
 });
 
 // Route to post a new message
-router.post('/psgchat/messages',verifyToken, async (req, res) => {
-  const { message, school_id } = req.body;  // Destructure sender and message from the request body
+router.post('/psgchat/messages', verifyToken, async (req, res) => {
+  const { message, school_id } = req.body;
   const username = req.username;
-  console.log("user",username)
+  
   try {
+    console.log('🔍 Creating new PSG chat message:', {
+      userId: req.userId,
+      username: username,
+      school_id: school_id,
+      messageLength: message?.length,
+      hasMessage: !!message
+    });
+    
+    // Input validation
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      console.log('❌ Invalid message provided');
+      return res.status(400).json({ 
+        error: "Invalid message",
+        details: "Message cannot be empty"
+      });
+    }
+    
+    if (!school_id || isNaN(school_id)) {
+      console.log('❌ Invalid school_id provided:', school_id);
+      return res.status(400).json({ 
+        error: "Invalid school_id",
+        details: "school_id must be a valid number"
+      });
+    }
+
+    if (!username) {
+      console.log('❌ Username not found in token');
+      return res.status(400).json({ 
+        error: "Authentication error",
+        details: "Username not found in token"
+      });
+    }
+
+    // ✅ FIX: Include username in message since table doesn't have username column
+    // Format: "username: actual_message" so frontend can parse and display properly
+    const messageWithUsername = `${username}: ${message.trim()}`;
+
     const { data, error } = await supabase
       .from('PsgChat')
-      .insert([{message, school_id, username}])   //add user 
+      .insert([{ 
+        message: messageWithUsername, 
+        school_id: parseInt(school_id)
+        // Note: created_at is auto-generated
+        // Note: id is auto-increment
+      }])
       .select("*");
 
     if (error) {
-      throw new Error('Error posting message');
+      console.error('❌ Supabase error in PSG chat insert:', {
+        error: error,
+        userId: req.userId,
+        username: username,
+        school_id: school_id,
+        timestamp: new Date().toISOString()
+      });
+      
+      return res.status(500).json({ 
+        error: "Database error while posting message",
+        details: error.message,
+        code: error.code || 'UNKNOWN_DB_ERROR'
+      });
     }
 
-    //create message object
-    const result = data[0].message;
+    if (!data || data.length === 0) {
+      console.error('❌ No data returned from Supabase insert');
+      return res.status(500).json({ 
+        error: "Message insert failed",
+        details: "No data returned from database"
+      });
+    }
+
+    console.log('✅ Successfully created PSG chat message');
+    
+    // 🔧 FIX: Return message with username info for frontend display
+    // Since table doesn't store username, we add it from JWT for client convenience
+    const result = { 
+      ...data[0], 
+      username: req.username // Add username for frontend display
+    };
+    
     res.status(201).json(result);
 
   } catch (error) {
-    console.log("error in psgchat", error);
-    res.status(500).json({ message: error.message });
+    console.error('❌ Unexpected error in PSG chat post:', {
+      error: error.message,
+      stack: error.stack,
+      userId: req.userId,
+      username: req.username,
+      school_id: school_id,
+      timestamp: new Date().toISOString()
+    });
+    
+    res.status(500).json({ 
+      error: "Internal server error",
+      details: "An unexpected error occurred while posting the message",
+      requestId: Date.now()
+    });
   }
 });
 

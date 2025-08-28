@@ -48,7 +48,7 @@ const SearchSchools = () => {
 
       // Fetch data from the server
       const response = await axios.get(
-        `http://localhost:5000/api/schools?${queryParams.toString()}`
+        `http://localhost:5001/api/schools?${queryParams.toString()}`
       );
       console.log("Query Parameters:", queryParams.toString());
 

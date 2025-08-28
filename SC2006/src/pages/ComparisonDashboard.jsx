@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 import InfoCard from '../components/InfoCard';
 import NameCard from '../components/NameCard';
@@ -8,15 +7,16 @@ import { useAuth } from '../context/AuthContext.jsx';
 const ComparisonDashboard = () => {
   const { loggedIn, setLoggedIn } = useAuth()
   const navigate = useNavigate();
-  //const { loggedIn, setLoggedIn } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
   const dropdownRef = useRef(null);
 
-
-{/*User Schools*/}
+{/*User Schools - 🔧 FIX: Initialize as empty array with proper structure */}
   const [allSchools, setAllSchools] = useState([]);
 
 {/*Save selected school for page reloading*/}
@@ -37,10 +37,10 @@ useEffect(() => {
   };
 }, []);
 
+// 🔧 FIX: Add proper error handling and loading states
 useEffect(()=>{
   fetchUserSchools();
 },[])
-
 
 useEffect(() => {
   localStorage.setItem('selectedSchools', JSON.stringify(selectedSchools));
@@ -65,7 +65,7 @@ const handleAddSchool = (school) => {
 
 const RemoveFavSchool = async(schoolName) =>{
   try {
-    const response = await fetch("http://localhost:5000/api/deleteFav",{method: "DELETE",
+    const response = await fetch("http://localhost:5001/api/deleteFav",{method: "DELETE",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ school_name: schoolName })})
@@ -76,23 +76,43 @@ const RemoveFavSchool = async(schoolName) =>{
   }
 }
 
+// 🔧 FIX: Enhanced fetchUserSchools with proper error handling
 const fetchUserSchools = async()=>{
   try {
-    const response = await fetch("http://localhost:5000/api/fetchFav", {credentials: 'include'})
+    setLoading(true);
+    setError('');
+    console.log('🔍 Fetching user favorites...');
+    
+    const response = await fetch("http://localhost:5001/api/fetchFav", {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
     if (response.ok){
-
-      const school = await response.json();
-      console.log("fetched schools yay", school)
-      setAllSchools(school);
-      console.log("stored schools",allSchools)
-
+      const data = await response.json();
+      console.log("✅ Fetched favorites successfully:", data);
+      
+      // 🔧 FIX: Handle the new response format from backend
+      const schools = data.favorites || data || [];
+      setAllSchools(Array.isArray(schools) ? schools : []);
+      console.log("📋 Stored schools:", schools);
     }
     else{
-      console.log("response data error")
+      const errorData = await response.text();
+      console.error("❌ Response error:", response.status, errorData);
+      setError(`Failed to fetch favorites: ${response.status}`);
+      setAllSchools([]); // Set empty array on error
     }
     
   } catch (error) {
-    console.log("runtime error")
+    console.error("❌ Network error fetching favorites:", error);
+    setError(`Network error: ${error.message}`);
+    setAllSchools([]); // Set empty array on error
+  } finally {
+    setLoading(false);
   }
 }
 
@@ -129,49 +149,91 @@ return (
   {isDropdownOpen && (
     <div
       ref={dropdownRef}
-      className="absolute bg-white border mt-2 rounded shadow-lg max-h-60 overflow-y-auto"
-      style={{ width: '200px' }} // Adjust width as needed
+      className="absolute bg-white border mt-2 rounded shadow-lg max-h-60 overflow-y-auto z-50"
+      style={{ width: '250px' }}
     >
-      <ul>
-        {allSchools.map((school) => (
-          <li
-          key={school.school_name}
-          className="flex justify-between items-center p-2 hover:bg-gray-100"
-        >
-          <button
-            onClick={ () => {
-              RemoveFavSchool(school);
-              handleRemoveSchool(school.school_name);
-              setAllSchools((prevAllSchools) => prevAllSchools.filter((s) => s.school_name !== school.school_name));
-            }}
-            className="w-full h-[70px] text-left flex justify-between items-center hover:bg-red"
-            onMouseEnter={(e) => {
-              e.target.innerText = 'Delete School';
-            }}
-            onMouseLeave={(e) => {
-              e.target.innerText = school.school_name;
-            }}
+      {/* 🔧 FIX: Add loading and error states */}
+      {loading ? (
+        <div className="p-4 text-center text-gray-500">
+          Loading favorites...
+        </div>
+      ) : error ? (
+        <div className="p-4 text-center text-red-500">
+          {error}
+          <button 
+            onClick={fetchUserSchools}
+            className="block mt-2 text-blue-500 hover:underline"
           >
-            {school.school_name}
+            Retry
           </button>
-            {selectedSchools.some((s) => s.school_name === school.school_name) ? (
-              <button
-                onClick={() => handleRemoveSchool(school.school_name)}
-                className="text-red-500"
+        </div>
+      ) : (
+        <ul>
+          {/* 🔧 FIX: Safe array handling with fallback */}
+          {(allSchools && Array.isArray(allSchools) && allSchools.length > 0) ? (
+            allSchools.map((school) => (
+              <li
+                key={school.id || school.school_name}
+                className="flex justify-between items-center p-2 hover:bg-gray-100 border-b"
               >
-                -
-              </button>
-            ) : (
-              <button
-                onClick={() => handleAddSchool(school)}
-                className="text-green-500"
+                <div className="flex-1">
+                  <div className="font-medium text-sm">
+                    {school.school_name || 'Unknown School'}
+                  </div>
+                  {school.review && (
+                    <div className="text-xs text-gray-500 mt-1">
+                      ⭐ {school.rating_f || 'N/A'}/5 | {school.review.substring(0, 30)}...
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-1">
+                  {selectedSchools.some((s) => s.school_name === school.school_name) ? (
+                    <button
+                      onClick={() => handleRemoveSchool(school.school_name)}
+                      className="text-red-500 text-xs px-2 py-1 hover:bg-red-100 rounded"
+                      title="Remove from comparison"
+                    >
+                      Remove
+                    </button>
+                  ) : selectedSchools.length < 3 ? (
+                    <button
+                      onClick={() => handleAddSchool(school)}
+                      className="text-blue-500 text-xs px-2 py-1 hover:bg-blue-100 rounded"
+                      title="Add to comparison"
+                    >
+                      Add
+                    </button>
+                  ) : null}
+                  
+                  <button
+                    onClick={() => {
+                      RemoveFavSchool(school);
+                      setAllSchools((prev) => 
+                        (prev || []).filter((s) => s.id !== school.id)
+                      );
+                    }}
+                    className="text-red-600 text-xs px-2 py-1 hover:bg-red-100 rounded"
+                    title="Delete from favorites"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))
+          ) : (
+            <div className="p-4 text-center text-gray-500">
+              No favorite schools yet.
+              <br />
+              <button 
+                onClick={() => navigate("/search")}
+                className="mt-2 text-blue-500 hover:underline"
               >
-                +
+                Find schools to add
               </button>
-            )}
-          </li>
-        ))}
-      </ul>
+            </div>
+          )}
+        </ul>
+      )}
     </div>
   )}
 </div>

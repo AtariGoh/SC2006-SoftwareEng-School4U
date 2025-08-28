@@ -20,14 +20,39 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
     try {
       const queryParams = new URLSearchParams({ query: name });
       const response = await axios.get(
-        `http://localhost:5000/api/schools?${queryParams.toString()}`
+        `http://localhost:5001/api/schools?${queryParams.toString()}`
       );
 
       if (response.status === 200) {
         const { ccas, moeprog, subjects } = response.data;
-        setCCAs(ccas || []);
-        setDistProg(moeprog || []);
-        setSubjects(subjects || []);
+        
+        // Filter CCAs for this specific school (like InfoCard does)
+        const schoolSpecificCCAs = (ccas || []).filter(cca => 
+          cca.school_name === name
+        );
+        
+        // Filter MOE programs for this specific school  
+        const schoolSpecificProgs = (moeprog || []).filter(prog => 
+          prog.school_name === name
+        );
+        
+        // Filter subjects for this specific school
+        const schoolSpecificSubjects = (subjects || []).filter(subject => 
+          subject.school_name === name
+        );
+        
+        console.log(`🔍 SchoolCard filtering for "${name}":`, {
+          totalCCAs: ccas?.length || 0,
+          filteredCCAs: schoolSpecificCCAs.length,
+          totalProgs: moeprog?.length || 0, 
+          filteredProgs: schoolSpecificProgs.length,
+          totalSubjects: subjects?.length || 0,
+          filteredSubjects: schoolSpecificSubjects.length
+        });
+        
+        setCCAs(schoolSpecificCCAs);
+        setDistProg(schoolSpecificProgs);
+        setSubjects(schoolSpecificSubjects);
       } else {
         console.error("Failed to fetch school details.");
       }
@@ -42,7 +67,7 @@ const SchoolCard = ({ name, postal_code, location, onCompare }) => {
   // Handle adding a school to favorites
   const handleAddSchool = async (schData) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/addToFav`, {
+      const response = await fetch(`http://localhost:5001/api/addToFav`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

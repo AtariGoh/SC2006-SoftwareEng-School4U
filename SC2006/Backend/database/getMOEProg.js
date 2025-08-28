@@ -7,22 +7,45 @@ const url = "https://data.gov.sg/api/action/datastore_search?resource_id="  + mo
 // Function to get data from the API
 async function getMOEProgramsData(queryParams) {
     try {
-      const queryString = JSON.stringify({ school_name: queryParams });
-      const response = await axios.get(`${url}&q=${queryString}`);
+      console.log('🔍 getMOEProgramsData called with:', queryParams);
+      
+      // Handle empty/undefined queries
+      if (!queryParams || typeof queryParams !== 'string' || queryParams.trim().length === 0) {
+        console.log('⚠️ Empty query parameter for MOE programs, returning empty array');
+        return [];
+      }
+      
+      const queryString = JSON.stringify({ school_name: queryParams.trim() });
+      const response = await axios.get(`${url}&q=${queryString}`, {
+        timeout: 10000,
+        headers: {
+          'User-Agent': 'School4U-App/1.0'
+        }
+      });
+
+      if (!response.data || !response.data.result || !response.data.result.records) {
+        console.log('⚠️ MOE Programs API returned no records');
+        return [];
+      }
   
-      const moeprogs = response.data.result.records || []; // Default to an empty array if records are undefined
+      const moeprogs = response.data.result.records || [];
   
-      return moeprogs.length > 0
+      const processedMOEProgs = moeprogs.length > 0
         ? moeprogs.map((moeprog, index) => ({
             id: index + 1,
-            school_name: moeprog.school_name,
+            school_name: moeprog.School_name || moeprog.school_name, // ✅ FIX: Handle both field variations
             category: moeprog.moe_programme_desc,
           }))
-        : []; // Return an empty array if moeprogs has no records
+        : [];
+
+      console.log(`✅ getMOEProgramsData returning ${processedMOEProgs.length} records`);
+      return processedMOEProgs;
       
     } catch (error) {
-      console.error("Error fetching data:", error);
-      throw new Error("Failed to fetch school data.");
+      console.error("❌ Error in getMOEProgramsData:", error.message);
+      // Return empty array instead of throwing
+      console.log('⚠️ Returning empty array due to MOE programs fetch error');
+      return [];
     }
   }
   

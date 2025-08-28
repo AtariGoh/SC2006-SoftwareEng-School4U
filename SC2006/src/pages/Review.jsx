@@ -33,7 +33,7 @@ const Review = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/addFeedback", {
+      const response = await fetch("http://localhost:5001/api/addFeedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

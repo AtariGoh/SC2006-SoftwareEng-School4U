@@ -21,21 +21,20 @@ const DetailedCard = ({
   const [coordinates, setCoordinates] = useState(null);
   const [showInfoWindow, setShowInfoWindow] = useState(false); // State to manage InfoWindow display
 
-  /*
+  
   console.log("Name:", name);
   console.log("CCAs:", ccas);
   console.log("Subjects:", subjects);
   console.log("DistProgs:", programmes);
   console.log("Location:", location);
   console.log("Loading:", loading);
-*/
 
   // Fetch coordinates based on the address
   useEffect(() => {
     const fetchCoordinates = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/get-coordinates",
+          "http://localhost:5001/api/get-coordinates",
           {
             address: location,
           }
@@ -54,19 +53,36 @@ const DetailedCard = ({
 
     switch (activeTab) {
       case "CCAs":
+        console.log("🔍 CCA Debug Info:");
+        console.log("- School name from props:", name);
+        console.log("- Total CCAs in dataset:", ccas.length);
+        console.log("- Sample CCA school names:", ccas.slice(0, 5).map(cca => cca.school_name));
+        console.log("- First few CCAs with their school names:", ccas.slice(0, 5).map(cca => ({name: cca.school_name, cca: cca.cca_name})));
+        
+        const matchingCCAs = ccas.filter((cca) => {
+          const match = cca.school_name === name;
+          if (ccas.length > 0 && ccas.length < 10) {
+            console.log(`- Comparing "${cca.school_name}" === "${name}": ${match}`);
+          }
+          return match;
+        });
+        console.log("- Matching CCAs found:", matchingCCAs.length);
+        
+        // Use category (actual CCA activity) instead of cca_name (generic group)
         const uniqueCCAs = Array.from(
           new Set(
-            ccas
-              .filter((cca) => cca.school_name === name)
-              .map((cca) => cca.cca_name)
+            matchingCCAs.map((cca) => cca.category)
           )
         );
+        
+        console.log("- Unique CCA categories (activities):", uniqueCCAs);
+        
         return (
           <ul className="list-disc list-inside max-h-56 overflow-y-auto pr-2">
             {uniqueCCAs.length > 0 ? (
               uniqueCCAs.map((cca, index) => <li key={index}>{cca}</li>)
             ) : (
-              <li>No CCAs available for this school.</li>
+              <li>No CCAs available for this school. (Total CCAs in dataset: {ccas.length})</li>
             )}
           </ul>
         );

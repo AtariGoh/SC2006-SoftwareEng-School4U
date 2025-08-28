@@ -26,7 +26,7 @@ const ChatComponent = ({
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/schools?query=${schoolSearch}`
+        `http://localhost:5001/api/schools?query=${schoolSearch}`
       );
 
       if (response.status === 200) {
@@ -66,7 +66,7 @@ const ChatComponent = ({
       const fetchMessages = async () => {
         try {
           const response = await fetch(
-            `http://localhost:5000/api/${apiEndpoint}/${selectedSchool}`
+            `http://localhost:5001/api/${apiEndpoint}/${selectedSchool}`
           );
           const data = await response.json();
           setMessages(data);
@@ -86,7 +86,7 @@ const ChatComponent = ({
     if (newMessage.trim()) {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/${apiEndpoint}/messages`,
+          `http://localhost:5001/api/${apiEndpoint}/messages`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -222,29 +222,49 @@ const ChatComponent = ({
           {loading ? (
             <div>Loading chat messages...</div>
           ) : (
-            messages.map((msg, index) => (
-              <div
-                key={index}
-                id={`message-${index}`}
-                className={`mb-4 p-3 rounded-xl shadow-sm max-w-md ${
-                  searchResults.some((result) => result.index === index)
-                    ? "bg-[#FAD02E]"
-                    : "bg-white"
-                } ${
-                  searchResults[currentSearchIndex]?.index === index
-                    ? "border-2 border-blue"
-                    : ""
-                } ${msg.user === "self" ? "ml-auto bg-[#DAEAF1]" : "mr-auto bg-[#FAF3EB]"
-                }`}
-              >
-                <p className="text-xs text-gray-500 mb-1">
-                  {formattedDate(msg.created_at)}
-                </p>
-                <p className="text-gray-800">
-                  {msg.username}: {msg.message}
-                </p>
-              </div>
-            ))
+            messages.map((msg, index) => {
+              // ✅ FIX: Parse username from message since backend stores it as "username: message"
+              const parseMessage = (messageText) => {
+                if (!messageText) return { username: "Unknown", message: "" };
+                
+                // Check if message contains ": " to separate username from message
+                const colonIndex = messageText.indexOf(': ');
+                if (colonIndex > 0) {
+                  const username = messageText.substring(0, colonIndex);
+                  const message = messageText.substring(colonIndex + 2);
+                  return { username, message };
+                } else {
+                  // Fallback for messages without username format
+                  return { username: "Unknown", message: messageText };
+                }
+              };
+
+              const { username, message } = parseMessage(msg.message);
+
+              return (
+                <div
+                  key={index}
+                  id={`message-${index}`}
+                  className={`mb-4 p-3 rounded-xl shadow-sm max-w-md ${
+                    searchResults.some((result) => result.index === index)
+                      ? "bg-[#FAD02E]"
+                      : "bg-white"
+                  } ${
+                    searchResults[currentSearchIndex]?.index === index
+                      ? "border-2 border-blue"
+                      : ""
+                  } ${msg.user === "self" ? "ml-auto bg-[#DAEAF1]" : "mr-auto bg-[#FAF3EB]"
+                  }`}
+                >
+                  <p className="text-xs text-gray-500 mb-1">
+                    {formattedDate(msg.created_at)}
+                  </p>
+                  <p className="text-gray-800">
+                    <span className="font-medium text-blue-600">{username}</span>: {message}
+                  </p>
+                </div>
+              );
+            })
           )}
         </div>
 
