@@ -14,6 +14,12 @@ const verifyToken = async (req, res, next) => {
   // Try to get JWT from multiple sources
   let token = req.cookies.accessToken; // From cookie
   
+  // If no accessToken, try refreshToken as fallback
+  if (!token && req.cookies.refreshToken) {
+    token = req.cookies.refreshToken;
+    console.log('🔄 Using refreshToken as fallback');
+  }
+  
   // If no cookie token, try Authorization header
   if (!token && req.headers.authorization) {
     const authHeader = req.headers.authorization;
