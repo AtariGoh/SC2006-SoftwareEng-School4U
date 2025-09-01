@@ -2,7 +2,7 @@ import React from "react";
 import ButtonCardForChat from "../components/ButtonCardForChat"; // Reusable card component
 import { useState, useEffect } from "react";
 import psgImage from "../assets/psg-image.png";
-import afterpri from "../assets/The-Transition-from-Primary-to-Secondary-School.png";
+import afterpri from "../assets/apchat.png";
 import aftsec from "../assets/after-secondary.png"
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -12,7 +12,7 @@ const Chat = () => {
   const [isVerified, setIsVerified] = useState(false); // New state for authentication
   const[allChats, setAllChats]=useState([]);
   const location = useLocation(); //to link compare dashboard 
-  //const { loggedIn, setLoggedIn } = useAuth();
+  const { loggedIn, setLoggedIn } = useAuth();
 
   useEffect(() => {
 
@@ -63,8 +63,9 @@ const Chat = () => {
   }, []);
 
 
-  {/*!loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> : */}
+
   return ( 
+    !loggedIn ? <div className="flex justify-center items-center h-[75vh]">Please Login first</div> : 
     <div className="p-6 max-w-7xl mx-auto">
       <h2 className="text-3xl font-bold mb-4">Parents Chat Forum</h2>
       <p className="text-lg mb-6">

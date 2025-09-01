@@ -23,13 +23,32 @@ router.post('/signup', async (req, res) => {
         if (error) {
             console.error('Error inserting user:', error);
             if (error.code === '23505') {
-                return res.status(400).json({ error: "Email already exists" });
+                if (error.message.includes('username')) {
+                    return res.status(400).json({ error: "Username already exists" });
+                } else if (error.message.includes('email')) {
+                    return res.status(400).json({ error: "Email already exists" });
+                }
             }
             return res.status(400).json({ error: error.message || "Error inserting user" });
         }
 
         const newUser = data[0];
-        res.status(201).json({ message: "User created successfully", user: newUser });
+        
+        // 🔧 FIX: Also include userId in signup JWT for consistency
+        const payload = { userId: newUser.id, userName: newUser.username };
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+        
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+            maxAge: 60 * 60 * 1000
+        });
+        
+        res.status(201).json({ 
+            message: "User created successfully", 
+            user: { id: newUser.id, username: newUser.username, email: newUser.email }
+        });
 
     } catch (err) {
         console.error('Unexpected error:', err);
@@ -60,7 +79,8 @@ router.post('/login', async (req, res) => {
             return res.status(404).json({ error: 'Invalid password' });
         }
 
-        const payload = { userId: user.uuid, userName: user.username };
+        // 🔧 FIX: Use user.id (not user.uuid) as primary key
+        const payload = { userId: user.id, userName: user.username };
         const accessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
         const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 

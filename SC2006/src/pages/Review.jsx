@@ -33,12 +33,13 @@ const Review = () => {
     };
 
     try {
-      const response = await fetch("https://your-api.com/reviews", {
+      const response = await fetch("http://localhost:5001/api/addFeedback", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(reviewData),
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -60,9 +61,8 @@ const Review = () => {
   const Star = ({ filled, onClick }) => (
     <span
       onClick={onClick}
-      className={`cursor-pointer text-3xl transition transform ${
-        filled ? "text-yellow-500 scale-110" : "text-gray-400"
-      } hover:scale-125 hover:text-yellow-300`}
+      style={{ color: filled ? "#F59E0B" : "#D1D5DB" }} // Yellow if filled, Gray otherwise
+      className="cursor-pointer text-3xl transition-transform transform hover:scale-125"
     >
       ★
     </span>

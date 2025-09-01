@@ -1,9 +1,11 @@
-import { useState } from 'react'; 
-import { useAuth } from '../context/AuthContext.jsx';
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext.jsx";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const [loginData, setLoginData] = useState({ username: "", password: "" });
   const { loggedIn, setLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -13,44 +15,43 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5001/api/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: loginData.username,
           password: loginData.password,
         }),
-          credentials: 'include'
+        credentials: "include",
       });
 
       if (response.ok) {
         const result = await response.json();
-        setLoggedIn(true); // Assume user is logged in if the login request succeeds
-      }
-       else {
+        setLoggedIn(true);
+        alert("Logged in successfully");
+        navigate("/");
+      } else {
         const error = await response.json();
         alert(error.error);
       }
     } catch (err) {
-      console.error('Error:', err); 
+      console.error("Error:", err);
     }
-    
-    console.log(loginData);  // This will now log the user and password correctly
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Login</h2>
-      <form onSubmit={handleSubmit}> {/* Attach the onSubmit handler here */}
+      <form onSubmit={handleSubmit}>
         <input
           type="text"
-          name="username" 
+          name="username"
           placeholder="Username"
           className="w-full p-2 mb-3 border rounded-2xl bg-[#FAEDCE]"
           value={loginData.username}
@@ -64,7 +65,10 @@ const Login = () => {
           value={loginData.password}
           onChange={handleChange}
         />
-        <button type="submit" className="w-full bg-[#EF5A6F] text-white py-2 rounded">
+        <button
+          type="submit"
+          className="w-full bg-[#EF5A6F] text-white py-2 rounded transition-transform duration-200 transform hover:scale-105 active:bg-[#D94A60] active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#D94A60] focus:ring-opacity-50"
+        >
           Login
         </button>
       </form>

@@ -8,7 +8,7 @@ const SchoolReview = () => {
   const [ratings, setRatings] = useState({
     facilities: 0,
     accessibility: 0,
-    useful: 0,
+    teachingQuality: 0,
   });
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,9 +28,8 @@ const SchoolReview = () => {
   const Star = ({ filled, onClick }) => (
     <span
       onClick={onClick}
-      className={`cursor-pointer text-3xl transition transform ${
-        filled ? "text-yellow-500 scale-110" : "text-gray-400"
-      } hover:scale-125 hover:text-yellow-300`}
+      style={{ color: filled ? "#F59E0B" : "#D1D5DB" }} // Yellow if filled, Gray otherwise
+      className="cursor-pointer text-3xl transition-transform transform hover:scale-125"
     >
       ★
     </span>
@@ -62,6 +61,7 @@ const SchoolReview = () => {
     setError(null);
 
     const reviewData = {
+      name,
       facilities: ratings.facilities,
       accessibility: ratings.accessibility,
       useful: ratings.useful,
@@ -69,12 +69,13 @@ const SchoolReview = () => {
     };
 
     try {
-      const response = await fetch("https://your-api.com/reviews", {
+      const response = await fetch("http://localhost:5001/api/addReview", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(reviewData),
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -97,15 +98,8 @@ const SchoolReview = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-2xl w-full">
         {/* School Header Section */}
         <div className="flex items-center space-x-4 mb-6">
-          <img
-            src="https://via.placeholder.com/100" // Placeholder for school emblem
-            alt="School Emblem"
-            className="w-24 h-24 rounded-full"
-          />
           <div>
             <h1 className="text-4xl font-bold">{name}</h1>
-            <p className="text-gray-700">{programme}</p>
-            <p className="text-gray-500">{location}</p>
           </div>
         </div>
 
@@ -120,7 +114,7 @@ const SchoolReview = () => {
             {renderStars("accessibility")}
           </div>
           <div className="mb-4">
-            <label className="block text-lg font-medium">Useful:</label>
+            <label className="block text-lg font-medium">Teaching quality:</label>
             {renderStars("useful")}
           </div>
         </div>
